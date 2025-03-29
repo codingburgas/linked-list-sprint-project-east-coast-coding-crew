@@ -20,10 +20,10 @@ file(GLOB_RECURSE HEADER_FILES "eccc/Core/include/*.h" "eccc/Core/include/*.hpp"
 
 target_sources(${PROJECT_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILES})
 
+# 🔹 Include directories for dependencies
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${DEP_FOLDER}/libpq/include
     ${DEP_FOLDER}/openssl/include
-    ${DEP_FOLDER}/cpr/curl/include
     ${DEP_FOLDER}/cpr/include
     ${DEP_FOLDER}/fmt/include
     ${DEP_FOLDER}/ftxui/include
@@ -36,17 +36,17 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/${WORKSPACE_NAME}/${PROJECT_NAME}/include
 )
 
-link_directories(
-    ${DEP_FOLDER}/libpq/lib
-    ${DEP_FOLDER}/openssl/lib
-    ${DEP_FOLDER}/fmt/src
-    ${DEP_FOLDER}/ftxui/src
-    ${DEP_FOLDER}/cpr/libs/Debug-libs
-    ${DEP_FOLDER}/cpr/libs/Release-libs
-)
-
-# Link libraries
-if(NOT APPLE)
+# 🔹 Link directories (Windows-specific adjustments)
+if(WIN32)
+    link_directories(
+        ${DEP_FOLDER}/libpq/lib
+        ${DEP_FOLDER}/openssl/lib
+        ${DEP_FOLDER}/fmt/src
+        ${DEP_FOLDER}/ftxui/src
+        ${DEP_FOLDER}/cpr/libs/Debug-libs
+        ${DEP_FOLDER}/cpr/libs/Release-libs
+    )
+    
     target_link_libraries(${PROJECT_NAME} PRIVATE
         libpq
         libssl
@@ -54,9 +54,11 @@ if(NOT APPLE)
         fmt
         ftxui
         cpr
+        ws2_32
     )
 endif()
 
+# 🔹 Add FTXUI sources if present
 set(FTXUI_DIR "${CMAKE_SOURCE_DIR}/${DEP_FOLDER}/ftxui")
 if(EXISTS "${FTXUI_DIR}" AND IS_DIRECTORY "${FTXUI_DIR}")
     set(FTXUI_SOURCES "")
@@ -68,45 +70,7 @@ if(EXISTS "${FTXUI_DIR}" AND IS_DIRECTORY "${FTXUI_DIR}")
     target_sources(${PROJECT_NAME} PRIVATE ${FTXUI_SOURCES})
 endif()
 
-if(APPLE)
-    execute_process(
-        COMMAND brew --prefix
-        OUTPUT_VARIABLE HOMEBREW_PREFIX
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    
-    if(NOT HOMEBREW_PREFIX)
-        set(HOMEBREW_PREFIX "/opt/homebrew")
-    endif()
-
-    message(STATUS "Using Homebrew prefix: ${HOMEBREW_PREFIX}")
-
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${HOMEBREW_PREFIX}/opt/libpq/include
-        ${HOMEBREW_PREFIX}/opt/openssl/include
-        ${HOMEBREW_PREFIX}/opt/fmt/include
-        ${HOMEBREW_PREFIX}/opt/curl/include
-    )
-
-    set(CMAKE_INSTALL_RPATH "${HOMEBREW_PREFIX}/opt/libpq/lib;${HOMEBREW_PREFIX}/opt/openssl/lib;${HOMEBREW_PREFIX}/opt/fmt/lib;${HOMEBREW_PREFIX}/opt/curl/lib")
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        LINK_FLAGS "-L${HOMEBREW_PREFIX}/opt/libpq/lib -L${HOMEBREW_PREFIX}/opt/openssl/lib -L${HOMEBREW_PREFIX}/opt/fmt/lib -L${HOMEBREW_PREFIX}/opt/curl/lib"
-    )
-
-    file(GLOB_RECURSE CPR_SOURCES "${DEP_FOLDER}/cpr/cpr/*.cpp")
-    target_sources(${PROJECT_NAME} PRIVATE ${CPR_SOURCES})
-
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        "-lpq"
-        "-lssl"
-        "-lcrypto"
-        "-lfmt"
-        "-lcurl"
-    )
-endif()
-
+# 🔹 Set Debug and Release configurations
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:easteregg_DEBUG>)
