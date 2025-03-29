@@ -18,17 +18,17 @@ namespace Eccc {
 					try {
 						std::call_once(database_flag, []() {
 							databaseInstance = new Database();
-							});
+						});
 
 						return std::async(std::launch::async, []() -> std::expected<Database*, std::string> {
 							return databaseInstance;
-							});
+						});
 					}
 					catch (const std::exception& e) {
 						return std::async(std::launch::async, [error = std::format("Error when creating database: {}", e.what())]()
 							-> std::expected<Database*, std::string> {
 								return std::unexpected(error);
-							});
+						});
 					}
 				}
 
