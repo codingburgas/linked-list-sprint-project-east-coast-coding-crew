@@ -11,7 +11,10 @@ namespace Eccc {
 	namespace Core {
 		class Database {
 			public:
-				static std::future<std::expected<Database*, std::string>> getInstance() {
+				using ASYNC_SINGLETON_RETURN = std::future<std::expected<Database*, std::string>>;
+				using ASYNC_NoReturn = std::future<std::expected<void, std::string>>;
+
+				static ASYNC_SINGLETON_RETURN getInstance() {
 					try {
 						std::call_once(database_flag, []() {
 							databaseInstance = new Database();
