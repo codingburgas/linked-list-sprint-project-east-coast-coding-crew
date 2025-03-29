@@ -15,8 +15,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 add_executable(${PROJECT_NAME})
 
-file(GLOB_RECURSE SRC_FILES "Eccc/Core/src/*.cpp")
-file(GLOB_RECURSE HEADER_FILES "Eccc/Core/include/*.h" "Eccc/Core/include/*.hpp")
+file(GLOB_RECURSE SRC_FILES "eccc/Core/src/*.cpp")
+file(GLOB_RECURSE HEADER_FILES "eccc/Core/include/*.h" "eccc/Core/include/*.hpp")
 
 target_sources(${PROJECT_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILES})
 
@@ -46,16 +46,67 @@ link_directories(
 )
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    libpq
-    libssl
-    libcrypto
-    fmt
-    ftxui
-    cpr
-)
+if(NOT APPLE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        libpq
+        libssl
+        libcrypto
+        fmt
+        ftxui
+        cpr
+    )
+endif()
 
-# Configurations
+set(FTXUI_DIR "${CMAKE_SOURCE_DIR}/${DEP_FOLDER}/ftxui")
+if(EXISTS "${FTXUI_DIR}" AND IS_DIRECTORY "${FTXUI_DIR}")
+    set(FTXUI_SOURCES "")
+    file(GLOB_RECURSE FTXUI_DOM_SOURCES "${FTXUI_DIR}/src/dom/*.cpp")
+    file(GLOB_RECURSE FTXUI_SCREEN_SOURCES "${FTXUI_DIR}/src/screen/*.cpp")
+    file(GLOB_RECURSE FTXUI_COMPONENT_SOURCES "${FTXUI_DIR}/src/component/*.cpp")
+    list(APPEND FTXUI_SOURCES ${FTXUI_DOM_SOURCES} ${FTXUI_SCREEN_SOURCES} ${FTXUI_COMPONENT_SOURCES})
+    
+    target_sources(${PROJECT_NAME} PRIVATE ${FTXUI_SOURCES})
+endif()
+
+if(APPLE)
+    execute_process(
+        COMMAND brew --prefix
+        OUTPUT_VARIABLE HOMEBREW_PREFIX
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    
+    if(NOT HOMEBREW_PREFIX)
+        set(HOMEBREW_PREFIX "/opt/homebrew")
+    endif()
+
+    message(STATUS "Using Homebrew prefix: ${HOMEBREW_PREFIX}")
+
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${HOMEBREW_PREFIX}/opt/libpq/include
+        ${HOMEBREW_PREFIX}/opt/openssl/include
+        ${HOMEBREW_PREFIX}/opt/fmt/include
+        ${HOMEBREW_PREFIX}/opt/curl/include
+    )
+
+    set(CMAKE_INSTALL_RPATH "${HOMEBREW_PREFIX}/opt/libpq/lib;${HOMEBREW_PREFIX}/opt/openssl/lib;${HOMEBREW_PREFIX}/opt/fmt/lib;${HOMEBREW_PREFIX}/opt/curl/lib")
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS "-L${HOMEBREW_PREFIX}/opt/libpq/lib -L${HOMEBREW_PREFIX}/opt/openssl/lib -L${HOMEBREW_PREFIX}/opt/fmt/lib -L${HOMEBREW_PREFIX}/opt/curl/lib"
+    )
+
+    file(GLOB_RECURSE CPR_SOURCES "${DEP_FOLDER}/cpr/cpr/*.cpp")
+    target_sources(${PROJECT_NAME} PRIVATE ${CPR_SOURCES})
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        "-lpq"
+        "-lssl"
+        "-lcrypto"
+        "-lfmt"
+        "-lcurl"
+    )
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:easteregg_DEBUG>)
