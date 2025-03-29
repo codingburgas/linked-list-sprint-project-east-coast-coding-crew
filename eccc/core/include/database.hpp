@@ -9,11 +9,8 @@
 using NoReturn = std::expected<void, std::string>;
 namespace Eccc {
 	namespace Core {
-
 		class Database {
-
 			public:
-
 				static std::future<std::expected<Database*, std::string>> getInstance() {
 					try {
 						std::call_once(database_flag, []() {
