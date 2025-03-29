@@ -13,8 +13,8 @@ project "Core"
   targetdir ("./bin/" .. outputdir .. "/%{prj.name}")
   objdir ("./bin-int/" .. outputdir .. "/%{prj.name}")
   files {
-    "Eccc/Core/src/.cpp",
-    "Eccc/Core/include/.h",
+    "Eccc/Core/src/*.cpp",
+    "Eccc/Core/include/*.h",
     "Eccc/Core/include/*.hpp"
   }
   includedirs {
