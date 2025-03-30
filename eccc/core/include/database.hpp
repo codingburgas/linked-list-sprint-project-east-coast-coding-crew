@@ -10,9 +10,11 @@ using NoReturn = std::expected<void, std::string>;
 namespace Eccc {
 	namespace Core {
 		class Database {
+
+			using ASYNC_SINGLETON_RETURN = std::future<std::expected<Database*, std::string>>;
+			using ASYNC_NoReturn = std::future<std::expected<void, std::string>>;
+
 			public:
-				using ASYNC_SINGLETON_RETURN = std::future<std::expected<Database*, std::string>>;
-				using ASYNC_NoReturn = std::future<std::expected<void, std::string>>;
 
 				static ASYNC_SINGLETON_RETURN getInstance() {
 					try {
@@ -32,19 +34,22 @@ namespace Eccc {
 					}
 				}
 
+				soci::session& getSession() {
+					if (!sql.is_connected()) {
+						throw std::runtime_error("Failed to connect to the database");
+					}
+					return sql;
+				}
+
 				Database(const Database&) = delete;
 				Database& operator=(const Database&) = delete;
 				soci::session sql;
 
-				soci::session* getSession() {
-					if (!sql.is_connected()) {
-						throw std::runtime_error("Failed to connect to the database");
-					}
-					return &sql;
-				}
-
+				// NON-ASYNC-METHOD FOR CONNECTING TO DB
 				NoReturn connectToDb();
-
+				
+				// ASYNC-METHOD FOR CONNECTING TO DB 
+				ASYNC_NoReturn async_connectToDb(); // (UPDATE MAIN TO HANDLE STD::FUTURE IN CASE OF USING THS)
 
 			private:
 				
@@ -54,8 +59,6 @@ namespace Eccc {
 				~Database() {
 					delete databaseInstance;
 				}
-
-
 
 		};
 	}
