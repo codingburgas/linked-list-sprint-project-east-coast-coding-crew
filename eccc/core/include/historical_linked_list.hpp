@@ -14,12 +14,18 @@ namespace Eccc {
             std::time_t date;
             std::string category;
             int significance;
+            std::string leader;
+            std::string participants;
+            std::string result;
 
             HistoricalEvent(int id, const std::string& title, const std::string& description,
                            const std::string& location, std::time_t date,
-                           const std::string& category, int significance)
+                           const std::string& category, int significance,
+                           const std::string& leader = "", const std::string& participants = "", 
+                           const std::string& result = "")
                 : id(id), title(title), description(description), location(location),
-                  date(date), category(category), significance(significance) {}
+                  date(date), category(category), significance(significance),
+                  leader(leader), participants(participants), result(result) {}
 
             HistoricalEvent() : id(0), date(0), significance(0) {}
         };
