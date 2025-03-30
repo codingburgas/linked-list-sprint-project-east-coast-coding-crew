@@ -2,7 +2,7 @@
 #include <iostream>
 using Eccc::Core::Database;
 
-Database::ASYNC_SINGLETON_RETURN instance = Eccc::Core::Database::getInstance(); // this is not a smart pointer to avoid double converting in the next line from a normal to a smart pointer
+Database::ASYNC_SINGLETON_RETURN instance = Database::getInstance(); // this is not a smart pointer to avoid double converting in the next line from a normal to a smart pointer
 
 auto databaseHandle = std::make_shared<std::expected<Database*, std::string>>(instance.get());
 std::shared_ptr<Database::ASYNC_NoReturn> generealFutureHandle;
