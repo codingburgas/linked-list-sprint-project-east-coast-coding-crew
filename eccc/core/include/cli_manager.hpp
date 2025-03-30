@@ -38,6 +38,8 @@ private:
     void handleSortByTitle();
     void handleDeleteEvent(const std::vector<std::string>& args);
     void handleUpdateEvent(const std::vector<std::string>& args);
+    void handleExportCommand(const std::vector<std::string>& args);
+    ExportFormat getFormatFromString(const std::string& formatStr);
 };
 
 }

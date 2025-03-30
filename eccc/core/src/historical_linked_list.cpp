@@ -238,6 +238,9 @@ namespace Eccc {
                 std::cout << "Date: " << timeBuffer << std::endl;
                 std::cout << "Category: " << event.category << std::endl;
                 std::cout << "Significance: " << event.significance << std::endl;
+                std::cout << "Leader: " << event.leader << std::endl;
+                std::cout << "Participants: " << event.participants << std::endl;
+                std::cout << "Result: " << event.result << std::endl;
                 std::cout << "------------------------" << std::endl;
 
                 current = current->next;

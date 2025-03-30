@@ -4,6 +4,9 @@
 #include <format>
 #include <ctime>
 #include <iomanip>
+#include <set>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 namespace Eccc {
 namespace Core {
@@ -35,9 +38,16 @@ void CliManager::displayCommandHelp() {
     std::cout << GREEN << "> event sort-title" << RESET << "     Sort events by title\n";
     std::cout << GREEN << "> event delete <id>" << RESET << "    Delete an event\n";
     std::cout << GREEN << "> event update <id>" << RESET << "    Update an event\n";
+    std::cout << GREEN << "> export" << RESET << "               Export events with options:\n";
+    std::cout << GREEN << "    -t" << RESET << "                 Export titles\n";
+    std::cout << GREEN << "    -c [category]" << RESET << "      Export all categories or specific category\n";
+    std::cout << GREEN << "    -r [result]" << RESET << "        Export all results or specific result\n";
+    std::cout << GREEN << "    -txt/-csv/-json" << RESET << "    Export format\n";
+    std::cout << GREEN << "    -o <filename>" << RESET << "      Output filename\n";
     std::cout << GREEN << "> sample" << RESET << "               Add sample data\n";
     std::cout << GREEN << "> help" << RESET << "                 View all commands\n";
     std::cout << GREEN << "> exit" << RESET << "                 Exit program\n";
+    std::cout << "\n" << BOLD << "Export formats:" << RESET << " txt, csv, json\n";
 }
 
 void CliManager::run() {
@@ -75,6 +85,9 @@ void CliManager::run() {
         else if (command == "event") {
             handleEventCommand(args);
         }
+        else if (command == "export") {
+            handleExportCommand(args);
+        }
         else if (!command.empty()) {
             std::cout << RED << "✗ " << RESET << "Unknown command: " << command << ". Try 'help' for a list of commands.\n";
         }
@@ -89,6 +102,9 @@ void CliManager::addSampleData() {
     event1.date = createDate(1776, 7, 4);
     event1.category = "Political";
     event1.significance = 10;
+    event1.leader = "Thomas Jefferson";
+    event1.participants = "Continental Congress, 13 American colonies";
+    event1.result = "Formation of the United States of America";
 
     HistoricalEvent event2;
     event2.title = "Moon Landing";
@@ -97,6 +113,9 @@ void CliManager::addSampleData() {
     event2.date = createDate(1969, 7, 20);
     event2.category = "Scientific";
     event2.significance = 9;
+    event2.leader = "Neil Armstrong";
+    event2.participants = "NASA, Neil Armstrong, Buzz Aldrin, Michael Collins";
+    event2.result = "First humans on the Moon";
 
     HistoricalEvent event3;
     event3.title = "World Wide Web Invention";
@@ -105,6 +124,9 @@ void CliManager::addSampleData() {
     event3.date = createDate(1989, 3, 12);
     event3.category = "Technology";
     event3.significance = 10;
+    event3.leader = "Tim Berners-Lee";
+    event3.participants = "CERN researchers";
+    event3.result = "Creation of the World Wide Web";
 
     HistoricalEvent event4;
     event4.title = "Fall of the Berlin Wall";
@@ -113,6 +135,9 @@ void CliManager::addSampleData() {
     event4.date = createDate(1989, 11, 9);
     event4.category = "Political";
     event4.significance = 8;
+    event4.leader = "Civil protesters";
+    event4.participants = "East and West German citizens";
+    event4.result = "Reunification of Germany";
 
     HistoricalEvent event5;
     event5.title = "First Powered Flight";
@@ -121,6 +146,9 @@ void CliManager::addSampleData() {
     event5.date = createDate(1903, 12, 17);
     event5.category = "Technology";
     event5.significance = 9;
+    event5.leader = "Orville and Wilbur Wright";
+    event5.participants = "Wright brothers";
+    event5.result = "Beginning of the aviation era";
 
     auto result1 = dbManager.createEvent(event1);
     auto result2 = dbManager.createEvent(event2);
@@ -155,6 +183,15 @@ HistoricalEvent CliManager::inputEventDetails() {
 
     std::cout << CYAN << "Enter event category: " << RESET;
     std::getline(std::cin, event.category);
+
+    std::cout << CYAN << "Enter event leader: " << RESET;
+    std::getline(std::cin, event.leader);
+
+    std::cout << CYAN << "Enter event participants: " << RESET;
+    std::getline(std::cin, event.participants);
+
+    std::cout << CYAN << "Enter event result: " << RESET;
+    std::getline(std::cin, event.result);
 
     std::cout << CYAN << "Enter event significance (1-10): " << RESET;
     std::cin >> event.significance;
@@ -261,6 +298,9 @@ void CliManager::handleFindEvent(const std::vector<std::string>& args) {
         std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
         std::cout << BOLD << "Category: " << RESET << event.category << "\n";
         std::cout << BOLD << "Significance: " << RESET << event.significance << "\n";
+        std::cout << BOLD << "Leader: " << RESET << event.leader << "\n";
+        std::cout << BOLD << "Participants: " << RESET << event.participants << "\n";
+        std::cout << BOLD << "Result: " << RESET << event.result << "\n";
     } else {
         std::cout << RED << "✗ " << RESET << "Error finding event: " << result.error() << "\n";
     }
@@ -418,6 +458,229 @@ void CliManager::handleUpdateEvent(const std::vector<std::string>& args) {
         std::cout << GREEN << "✓ " << RESET << "Event updated successfully.\n";
     } else {
         std::cout << RED << "✗ " << RESET << "Error updating event: " << result.error() << "\n";
+    }
+}
+
+void CliManager::handleExportCommand(const std::vector<std::string>& args) {
+    if (args.empty()) {
+        std::cout << RED << "✗ " << RESET << "Missing export options. Try 'help' for command syntax.\n";
+        return;
+    }
+
+    bool exportTitles = false;
+    bool exportCategories = false;
+    bool exportResults = false;
+    std::string category = "";
+    std::string result = "";
+    ExportFormat format = ExportFormat::TEXT;
+    std::string outputFile = "export_output";
+    bool formatSpecified = false;
+    bool outputSpecified = false;
+
+    for (size_t i = 0; i < args.size(); ++i) {
+        const std::string& arg = args[i];
+
+        if (arg == "-t") {
+            exportTitles = true;
+        }
+        else if (arg == "-c") {
+            exportCategories = true;
+            if (i + 1 < args.size() && args[i + 1][0] != '-') {
+                category = args[++i];
+            }
+        }
+        else if (arg == "-r") {
+            exportResults = true;
+            if (i + 1 < args.size() && args[i + 1][0] != '-') {
+                result = args[++i];
+            }
+        }
+        else if (arg == "-txt") {
+            format = ExportFormat::TEXT;
+            formatSpecified = true;
+        }
+        else if (arg == "-csv") {
+            format = ExportFormat::CSV;
+            formatSpecified = true;
+        }
+        else if (arg == "-json") {
+            format = ExportFormat::JSON;
+            formatSpecified = true;
+        }
+        else if (arg == "-o" && i + 1 < args.size()) {
+            outputFile = args[++i];
+            outputSpecified = true;
+        }
+    }
+
+    if (!outputSpecified) {
+        std::cout << YELLOW << "! " << RESET << "No output file specified, using default: " << outputFile << "\n";
+    }
+
+    if (format == ExportFormat::TEXT && outputFile.find(".txt") == std::string::npos) {
+        outputFile += ".txt";
+    }
+    else if (format == ExportFormat::CSV && outputFile.find(".csv") == std::string::npos) {
+        outputFile += ".csv";
+    }
+    else if (format == ExportFormat::JSON && outputFile.find(".json") == std::string::npos) {
+        outputFile += ".json";
+    }
+
+    bool success = false;
+    std::string errorMsg;
+
+    if (exportTitles) {
+        auto result = dbManager.exportAllEventTitles(outputFile, format);
+        success = result.has_value();
+        if (!success) errorMsg = result.error();
+    }
+    else if (exportCategories) {
+        if (!category.empty()) {
+            auto result = dbManager.exportEventsByCategory(category, outputFile, format);
+            success = result.has_value();
+            if (!success) errorMsg = result.error();
+        } else {
+            auto events = dbManager.getAllEvents();
+            if (!events) {
+                success = false;
+                errorMsg = events.error();
+            } else {
+                std::set<std::string> categories;
+                for (const auto& event : events.value()) {
+                    if (!event.category.empty()) {
+                        categories.insert(event.category);
+                    }
+                }
+                
+                std::ofstream file(outputFile);
+                if (!file.is_open()) {
+                    success = false;
+                    errorMsg = "Could not open file for writing";
+                } else {
+                    try {
+                        success = true;
+                        switch (format) {
+                            case ExportFormat::TEXT: {
+                                file << "# All Categories\n\n";
+                                for (const auto& cat : categories) {
+                                    file << "- " << cat << "\n";
+                                }
+                                break;
+                            }
+                            case ExportFormat::CSV: {
+                                file << "Category\n";
+                                for (const auto& cat : categories) {
+                                    file << "\"" << cat << "\"\n";
+                                }
+                                break;
+                            }
+                            case ExportFormat::JSON: {
+                                nlohmann::json jsonOutput;
+                                jsonOutput["type"] = "categories";
+                                nlohmann::json categoriesArray = nlohmann::json::array();
+                                for (const auto& cat : categories) {
+                                    categoriesArray.push_back(cat);
+                                }
+                                jsonOutput["categories"] = categoriesArray;
+                                file << jsonOutput.dump(4);
+                                break;
+                            }
+                        }
+                    } catch (const std::exception& e) {
+                        success = false;
+                        errorMsg = std::string("Error writing to file: ") + e.what();
+                    }
+                }
+            }
+        }
+    }
+    else if (exportResults) {
+        if (!result.empty()) {  
+            auto exportResult = dbManager.exportEventsByResult(result, outputFile, format);
+            success = exportResult.has_value();
+            if (!success) errorMsg = exportResult.error();
+        } else {
+            auto events = dbManager.getAllEvents();
+            if (!events) {
+                success = false;
+                errorMsg = events.error();
+            } else {
+                std::set<std::string> results;
+                for (const auto& event : events.value()) {
+                    if (!event.result.empty()) {
+                        results.insert(event.result);
+                    }
+                }
+                
+                std::ofstream file(outputFile);
+                if (!file.is_open()) {
+                    success = false;
+                    errorMsg = "Could not open file for writing";
+                } else {
+                    try {
+                        success = true;
+                        switch (format) {
+                            case ExportFormat::TEXT: {
+                                file << "# All Results\n\n";
+                                for (const auto& res : results) {
+                                    file << "- " << res << "\n";
+                                }
+                                break;
+                            }
+                            case ExportFormat::CSV: {
+                                file << "Result\n";
+                                for (const auto& res : results) {
+                                    file << "\"" << res << "\"\n";
+                                }
+                                break;
+                            }
+                            case ExportFormat::JSON: {
+                                nlohmann::json jsonOutput;
+                                jsonOutput["type"] = "results";
+                                nlohmann::json resultsArray = nlohmann::json::array();
+                                for (const auto& res : results) {
+                                    resultsArray.push_back(res);
+                                }
+                                jsonOutput["results"] = resultsArray;
+                                file << jsonOutput.dump(4);
+                                break;
+                            }
+                        }
+                    } catch (const std::exception& e) {
+                        success = false;
+                        errorMsg = std::string("Error writing to file: ") + e.what();
+                    }
+                }
+            }
+        }
+    }
+    else {
+        std::cout << YELLOW << "! " << RESET << "No export type specified, defaulting to titles export\n";
+        auto result = dbManager.exportAllEventTitles(outputFile, format);
+        success = result.has_value();
+        if (!success) errorMsg = result.error();
+    }
+
+    if (success) {
+        std::cout << GREEN << "✓ " << RESET << "Successfully exported data to " << outputFile << "\n";
+    } else {
+        std::cout << RED << "✗ " << RESET << "Error exporting data: " << errorMsg << "\n";
+    }
+}
+
+ExportFormat CliManager::getFormatFromString(const std::string& formatStr) {
+    if (formatStr == "txt" || formatStr == "text") {
+        return ExportFormat::TEXT;
+    }
+    else if (formatStr == "csv") {
+        return ExportFormat::CSV;
+    }
+    else if (formatStr == "json") {
+        return ExportFormat::JSON;
+    }
+    else {
+        return ExportFormat::TEXT;
     }
 }
 
