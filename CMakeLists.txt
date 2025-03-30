@@ -20,7 +20,6 @@ file(GLOB_RECURSE HEADER_FILES "eccc/Core/include/*.h" "eccc/Core/include/*.hpp"
 
 target_sources(${PROJECT_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILES})
 
-# 🔹 Include directories for dependencies
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${DEP_FOLDER}/libpq/include
     ${DEP_FOLDER}/openssl/include
@@ -36,7 +35,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/${WORKSPACE_NAME}/${PROJECT_NAME}/include
 )
 
-# 🔹 Link directories (Windows-specific adjustments)
+if(APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        /usr/local/include
+        /opt/homebrew/include
+        /opt/homebrew/include/postgresql@14
+    )
+endif()
+
 if(WIN32)
     link_directories(
         ${DEP_FOLDER}/libpq/lib
@@ -58,7 +64,6 @@ if(WIN32)
     )
 endif()
 
-# 🔹 Add FTXUI sources if present
 set(FTXUI_DIR "${CMAKE_SOURCE_DIR}/${DEP_FOLDER}/ftxui")
 if(EXISTS "${FTXUI_DIR}" AND IS_DIRECTORY "${FTXUI_DIR}")
     set(FTXUI_SOURCES "")
@@ -70,7 +75,6 @@ if(EXISTS "${FTXUI_DIR}" AND IS_DIRECTORY "${FTXUI_DIR}")
     target_sources(${PROJECT_NAME} PRIVATE ${FTXUI_SOURCES})
 endif()
 
-# 🔹 Set Debug and Release configurations
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:easteregg_DEBUG>)
@@ -78,3 +82,12 @@ set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_LIBRARIES $<$<CONFIG:De
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:easteregg_RELEASE>)
 set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_LIBRARIES $<$<CONFIG:Release>:libcurl_imp cpr>)
+
+if(APPLE)
+    target_link_directories(${PROJECT_NAME} PRIVATE
+        /usr/local/lib
+        /opt/homebrew/lib
+        /opt/homebrew/lib/postgresql@14
+    )
+    target_link_libraries(${PROJECT_NAME} PRIVATE soci_core soci_sqlite3 soci_postgresql pq)
+endif()
