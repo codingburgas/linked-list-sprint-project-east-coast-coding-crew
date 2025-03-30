@@ -42,8 +42,7 @@ private:
     void handleListEventsByYear(const std::string& yearStr);
     void handleExportCommand(const std::vector<std::string>& args);
     ExportFormat getFormatFromString(const std::string& formatStr);
-    
-    // Keep these private helper functions but don't expose them in the interface
+
     void handleFindEvent(const std::vector<std::string>& args);
     void handleCategorySearch(const std::vector<std::string>& args);
     void handleLocationSearch(const std::vector<std::string>& args);

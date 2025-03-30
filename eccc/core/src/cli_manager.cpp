@@ -383,11 +383,9 @@ void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
 
     std::vector<HistoricalEvent> matchedEvents;
     for (const auto& event : eventsResult.value()) {
-        // Case-insensitive partial match
         std::string eventCategory = event.category;
         std::string query = categoryQuery;
         
-        // Convert to lowercase for case-insensitive comparison
         std::transform(eventCategory.begin(), eventCategory.end(), eventCategory.begin(), 
                       [](unsigned char c) { return std::tolower(c); });
         std::transform(query.begin(), query.end(), query.begin(), 
@@ -425,11 +423,9 @@ void CliManager::handleLocationSearch(const std::vector<std::string>& args) {
 
     std::vector<HistoricalEvent> matchedEvents;
     for (const auto& event : eventsResult.value()) {
-        // Case-insensitive partial match
         std::string eventLocation = event.location;
         std::string query = locationQuery;
         
-        // Convert to lowercase for case-insensitive comparison
         std::transform(eventLocation.begin(), eventLocation.end(), eventLocation.begin(), 
                       [](unsigned char c) { return std::tolower(c); });
         std::transform(query.begin(), query.end(), query.begin(), 
