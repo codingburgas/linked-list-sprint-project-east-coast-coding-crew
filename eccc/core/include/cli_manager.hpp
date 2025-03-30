@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <limits>
+#include <map>
 
 namespace Eccc {
 namespace Core {
@@ -42,7 +44,25 @@ private:
     void handleListEventsByYear(const std::string& yearStr);
     void handleExportCommand(const std::vector<std::string>& args);
     ExportFormat getFormatFromString(const std::string& formatStr);
+    
+    // Interactive UI methods
+    void displayDashboard();
+    void displayInteractiveMenu();
+    void displaySearchSubmenu();
+    void displaySortSubmenu();
+    void displayExportSubmenu();
+    void displayPressEnterToContinue();
+    void displayEventDetails(const HistoricalEvent& event);
+    void displayProgressBar(int current, int total, const std::string& label);
+    
+    // Modern UI methods
+    void displayModernSearchMenu();
+    void displayModernSortMenu();
+    void displayModernExportMenu();
+    void handleModernExport(int exportType);
+    void handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode);
 
+    // Keep these private helper functions but don't expose them in the interface
     void handleFindEvent(const std::vector<std::string>& args);
     void handleCategorySearch(const std::vector<std::string>& args);
     void handleLocationSearch(const std::vector<std::string>& args);
