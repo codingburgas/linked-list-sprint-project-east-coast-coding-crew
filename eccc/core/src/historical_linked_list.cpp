@@ -82,6 +82,34 @@ namespace Eccc {
             size++;
         }
 
+        void HistoricalLinkedList::insertByDate(const HistoricalEvent& event) {
+            if (isEmpty() || event.date < head->data.date) {
+                insertAtBeginning(event);
+                return;
+            }
+            
+            if (event.date >= tail->data.date) {
+                insertAtEnd(event);
+                return;
+            }
+            
+            HistoricalNode* current = head;
+            while (current != nullptr && current->data.date <= event.date) {
+                current = current->next;
+            }
+            
+            if (current == nullptr) {
+                insertAtEnd(event);
+            } else {
+                HistoricalNode* newNode = new HistoricalNode(event);
+                newNode->next = current;
+                newNode->prev = current->prev;
+                current->prev->next = newNode;
+                current->prev = newNode;
+                size++;
+            }
+        }
+
         bool HistoricalLinkedList::deleteNode(int id) {
             if (isEmpty()) {
                 return false;

@@ -30,16 +30,23 @@ private:
 
     void handleEventCommand(const std::vector<std::string>& args);
     void handleAddEvent();
+    void handleAddFirstEvent();
+    void handleAddEventAtBeginning();
+    void handleAddEventByDate();
     void handleListEvents();
-    void handleFindEvent(const std::vector<std::string>& args);
-    void handleCategorySearch(const std::vector<std::string>& args);
-    void handleLocationSearch(const std::vector<std::string>& args);
     void handleSortByDate();
     void handleSortByTitle();
     void handleDeleteEvent(const std::vector<std::string>& args);
     void handleUpdateEvent(const std::vector<std::string>& args);
+    void handleListEventsByDate(const std::string& dateStr);
+    void handleListEventsByYear(const std::string& yearStr);
     void handleExportCommand(const std::vector<std::string>& args);
     ExportFormat getFormatFromString(const std::string& formatStr);
+    
+    // Keep these private helper functions but don't expose them in the interface
+    void handleFindEvent(const std::vector<std::string>& args);
+    void handleCategorySearch(const std::vector<std::string>& args);
+    void handleLocationSearch(const std::vector<std::string>& args);
 };
 
 }
