@@ -30,10 +30,15 @@ void CliManager::displayLogo() {
 void CliManager::displayCommandHelp() {
     std::cout << BOLD << "\nCommands:" << RESET << "\n";
     std::cout << GREEN << "> event add" << RESET << "            Add a new historical event\n";
+    std::cout << GREEN << "> event add -f" << RESET << "         Add first event as first node\n";
+    std::cout << GREEN << "> event add -b" << RESET << "         Add event at beginning of list\n";
+    std::cout << GREEN << "> event add -d" << RESET << "         Add event based on date order\n";
     std::cout << GREEN << "> event list" << RESET << "           View all events\n";
-    std::cout << GREEN << "> event find <id>" << RESET << "      Find event by ID\n";
-    std::cout << GREEN << "> event category <n>" << RESET << " Find events by category\n";
-    std::cout << GREEN << "> event location <n>" << RESET << " Find events by location\n";
+    std::cout << GREEN << "> event list -d MM/DD" << RESET << "  Find events by month/day\n";
+    std::cout << GREEN << "> event list -y YYYY" << RESET << "   Find events by year\n";
+    std::cout << GREEN << "> event list -c TEXT" << RESET << "   Find events by category (partial match)\n";
+    std::cout << GREEN << "> event list -l TEXT" << RESET << "   Find events by location (partial match)\n";
+    std::cout << GREEN << "> event list id ID" << RESET << "     Find event by ID\n";
     std::cout << GREEN << "> event sort-date" << RESET << "      Sort events by date\n";
     std::cout << GREEN << "> event sort-title" << RESET << "     Sort events by title\n";
     std::cout << GREEN << "> event delete <id>" << RESET << "    Delete an event\n";
@@ -209,19 +214,75 @@ void CliManager::handleEventCommand(const std::vector<std::string>& args) {
     std::string subCommand = args[0];
 
     if (subCommand == "add") {
-        handleAddEvent();
+        if (args.size() > 1) {
+            if (args[1] == "-f") {
+                handleAddFirstEvent();
+            }
+            else if (args[1] == "-b") {
+                handleAddEventAtBeginning();
+            }
+            else if (args[1] == "-d") {
+                handleAddEventByDate();
+            }
+            else {
+                std::cout << RED << "✗ " << RESET << "Invalid add option. Usage: event add [-f|-b|-d]\n";
+            }
+        }
+        else {
+            handleAddEvent();
+        }
     }
     else if (subCommand == "list") {
-        handleListEvents();
-    }
-    else if (subCommand == "find") {
-        handleFindEvent(args);
-    }
-    else if (subCommand == "category") {
-        handleCategorySearch(args);
-    }
-    else if (subCommand == "location") {
-        handleLocationSearch(args);
+        if (args.size() > 1) {
+            if (args[1] == "-d" && args.size() > 2) {
+                handleListEventsByDate(args[2]);
+            }
+            else if (args[1] == "-y" && args.size() > 2) {
+                handleListEventsByYear(args[2]);
+            }
+            else if (args[1] == "-c" && args.size() > 2) {
+                handleCategorySearch({args[0], args[2]});
+            }
+            else if (args[1] == "-l" && args.size() > 2) {
+                handleLocationSearch({args[0], args[2]});
+            }
+            else if (args[1] == "id" && args.size() > 2) {
+                try {
+                    int id = std::stoi(args[2]);
+                    auto result = dbManager.readEvent(id);
+                    if (result) {
+                        const HistoricalEvent& event = result.value();
+                        std::cout << BOLD << "ID: " << RESET << event.id << "\n";
+                        std::cout << BOLD << "Title: " << RESET << event.title << "\n";
+                        std::cout << BOLD << "Description: " << RESET << event.description << "\n";
+                        std::cout << BOLD << "Location: " << RESET << event.location << "\n";
+
+                        char timeBuffer[80];
+                        struct tm* timeInfo = localtime(&event.date);
+                        strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
+
+                        std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
+                        std::cout << BOLD << "Category: " << RESET << event.category << "\n";
+                        std::cout << BOLD << "Significance: " << RESET << event.significance << "\n";
+                        std::cout << BOLD << "Leader: " << RESET << event.leader << "\n";
+                        std::cout << BOLD << "Participants: " << RESET << event.participants << "\n";
+                        std::cout << BOLD << "Result: " << RESET << event.result << "\n";
+                    } else {
+                        std::cout << RED << "✗ " << RESET << "Error finding event: " << result.error() << "\n";
+                    }
+                } catch (...) {
+                    std::cout << RED << "✗ " << RESET << "Invalid ID. Please enter a number.\n";
+                }
+            }
+            else {
+                std::cout << RED << "✗ " << RESET << "Invalid list option. Usage: event list [-d MM/DD | -y YYYY | -c CATEGORY | -l LOCATION | id ID]\n";
+                std::cout << "  -c: Search for events with category containing CATEGORY\n";
+                std::cout << "  -l: Search for events with location containing LOCATION\n";
+            }
+        }
+        else {
+            handleListEvents();
+        }
     }
     else if (subCommand == "sort-date") {
         handleSortByDate();
@@ -312,23 +373,37 @@ void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
         return;
     }
 
-    std::string category = args[1];
-    auto result = dbManager.getEventsByCategory(category);
+    std::string categoryQuery = args[1];
+    auto eventsResult = dbManager.getAllEvents();
 
-    if (result) {
-        const std::vector<HistoricalEvent>& events = result.value();
+    if (!eventsResult) {
+        std::cout << RED << "✗ " << RESET << "Error loading events: " << eventsResult.error() << "\n";
+        return;
+    }
 
-        if (events.empty()) {
-            std::cout << YELLOW << "! " << RESET << "No events found in the category '" << category << "'.\n";
-        } else {
-            std::cout << CYAN << "Found " << events.size() << " events in category '" << category << "':" << RESET << "\n";
-
-            for (const auto& event : events) {
-                std::cout << "  " << BOLD << event.id << RESET << " - " << event.title << "\n";
-            }
+    std::vector<HistoricalEvent> matchedEvents;
+    for (const auto& event : eventsResult.value()) {
+        std::string eventCategory = event.category;
+        std::string query = categoryQuery;
+        
+        std::transform(eventCategory.begin(), eventCategory.end(), eventCategory.begin(), 
+                      [](unsigned char c) { return std::tolower(c); });
+        std::transform(query.begin(), query.end(), query.begin(), 
+                      [](unsigned char c) { return std::tolower(c); });
+        
+        if (eventCategory.find(query) != std::string::npos) {
+            matchedEvents.push_back(event);
         }
+    }
+
+    if (matchedEvents.empty()) {
+        std::cout << YELLOW << "! " << RESET << "No events found matching category '" << categoryQuery << "'.\n";
     } else {
-        std::cout << RED << "✗ " << RESET << "Error finding events: " << result.error() << "\n";
+        std::cout << CYAN << "Found " << matchedEvents.size() << " events matching category '" << categoryQuery << "':" << RESET << "\n";
+
+        for (const auto& event : matchedEvents) {
+            std::cout << "  " << BOLD << event.id << RESET << " - " << event.title << " (" << event.category << ")\n";
+        }
     }
 }
 
@@ -338,23 +413,37 @@ void CliManager::handleLocationSearch(const std::vector<std::string>& args) {
         return;
     }
 
-    std::string location = args[1];
-    auto result = dbManager.getEventsByLocation(location);
+    std::string locationQuery = args[1];
+    auto eventsResult = dbManager.getAllEvents();
 
-    if (result) {
-        const std::vector<HistoricalEvent>& events = result.value();
+    if (!eventsResult) {
+        std::cout << RED << "✗ " << RESET << "Error loading events: " << eventsResult.error() << "\n";
+        return;
+    }
 
-        if (events.empty()) {
-            std::cout << YELLOW << "! " << RESET << "No events found at location '" << location << "'.\n";
-        } else {
-            std::cout << CYAN << "Found " << events.size() << " events at location '" << location << "':" << RESET << "\n";
-
-            for (const auto& event : events) {
-                std::cout << "  " << BOLD << event.id << RESET << " - " << event.title << "\n";
-            }
+    std::vector<HistoricalEvent> matchedEvents;
+    for (const auto& event : eventsResult.value()) {
+        std::string eventLocation = event.location;
+        std::string query = locationQuery;
+        
+        std::transform(eventLocation.begin(), eventLocation.end(), eventLocation.begin(), 
+                      [](unsigned char c) { return std::tolower(c); });
+        std::transform(query.begin(), query.end(), query.begin(), 
+                      [](unsigned char c) { return std::tolower(c); });
+        
+        if (eventLocation.find(query) != std::string::npos) {
+            matchedEvents.push_back(event);
         }
+    }
+
+    if (matchedEvents.empty()) {
+        std::cout << YELLOW << "! " << RESET << "No events found matching location '" << locationQuery << "'.\n";
     } else {
-        std::cout << RED << "✗ " << RESET << "Error finding events: " << result.error() << "\n";
+        std::cout << CYAN << "Found " << matchedEvents.size() << " events matching location '" << locationQuery << "':" << RESET << "\n";
+
+        for (const auto& event : matchedEvents) {
+            std::cout << "  " << BOLD << event.id << RESET << " - " << event.title << " (" << event.location << ")\n";
+        }
     }
 }
 
@@ -681,6 +770,204 @@ ExportFormat CliManager::getFormatFromString(const std::string& formatStr) {
     }
     else {
         return ExportFormat::TEXT;
+    }
+}
+
+void CliManager::handleListEventsByDate(const std::string& dateStr) {
+    int month, day;
+    
+    if (sscanf(dateStr.c_str(), "%d/%d", &month, &day) != 2) {
+        std::cout << RED << "✗ " << RESET << "Invalid date format. Expected MM/DD (e.g., 08/03)\n";
+        return;
+    }
+    
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+        std::cout << RED << "✗ " << RESET << "Invalid date. Month must be 1-12 and day must be 1-31.\n";
+        return;
+    }
+    
+    auto result = dbManager.loadEventsToLinkedList();
+    
+    if (!result) {
+        std::cout << RED << "✗ " << RESET << "Error loading events: " << result.error() << "\n";
+        return;
+    }
+    
+    HistoricalLinkedList& list = result.value();
+    if (list.isEmpty()) {
+        std::cout << YELLOW << "! " << RESET << "No events found in the database.\n";
+        return;
+    }
+    
+    std::cout << CYAN << "Events on " << month << "/" << day << " (any year):" << RESET << "\n";
+    bool found = false;
+    
+    HistoricalNode* current = list.getHead();
+    while (current) {
+        struct tm* timeInfo = localtime(&current->data.date);
+        
+        if (timeInfo->tm_mon + 1 == month && timeInfo->tm_mday == day) {
+            found = true;
+            char timeBuffer[80];
+            strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
+            
+            std::cout << "  " << BOLD << current->data.id << RESET 
+                     << " - " << current->data.title 
+                     << " (" << timeBuffer << ")\n";
+        }
+        
+        current = current->next;
+    }
+    
+    if (!found) {
+        std::cout << YELLOW << "! " << RESET << "No events found on this date.\n";
+    }
+}
+
+void CliManager::handleListEventsByYear(const std::string& yearStr) {
+    int year;
+    
+    try {
+        year = std::stoi(yearStr);
+    } catch (...) {
+        std::cout << RED << "✗ " << RESET << "Invalid year format. Expected YYYY (e.g., 1998)\n";
+        return;
+    }
+    
+    if (year < 1 || year > 9999) {
+        std::cout << RED << "✗ " << RESET << "Invalid year. Year must be between 1 and 9999.\n";
+        return;
+    }
+    
+    auto result = dbManager.loadEventsToLinkedList();
+    
+    if (!result) {
+        std::cout << RED << "✗ " << RESET << "Error loading events: " << result.error() << "\n";
+        return;
+    }
+    
+    HistoricalLinkedList& list = result.value();
+    if (list.isEmpty()) {
+        std::cout << YELLOW << "! " << RESET << "No events found in the database.\n";
+        return;
+    }
+    
+    std::cout << CYAN << "Events in year " << year << ":" << RESET << "\n";
+    bool found = false;
+    
+    HistoricalNode* current = list.getHead();
+    while (current) {
+        struct tm* timeInfo = localtime(&current->data.date);
+        
+        if (timeInfo->tm_year + 1900 == year) {
+            found = true;
+            char timeBuffer[80];
+            strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
+            
+            std::cout << "  " << BOLD << current->data.id << RESET 
+                     << " - " << current->data.title 
+                     << " (" << timeBuffer << ")\n";
+        }
+        
+        current = current->next;
+    }
+    
+    if (!found) {
+        std::cout << YELLOW << "! " << RESET << "No events found in this year.\n";
+    }
+}
+
+void CliManager::handleAddFirstEvent() {
+    if (dbManager.getAllEvents().value_or(std::vector<HistoricalEvent>()).size() > 0) {
+        std::cout << RED << "✗ " << RESET << "Database already contains events. This command can only be used on an empty database.\n";
+        return;
+    }
+    
+    HistoricalEvent newEvent = inputEventDetails();
+    auto result = dbManager.createEvent(newEvent);
+
+    if (result) {
+        std::cout << GREEN << "✓ " << RESET << "First event added successfully with ID: " << result.value() << "\n";
+    } else {
+        std::cout << RED << "✗ " << RESET << "Error adding event: " << result.error() << "\n";
+    }
+}
+
+void CliManager::handleAddEventAtBeginning() {
+    HistoricalEvent newEvent = inputEventDetails();
+    auto result = dbManager.createEvent(newEvent);
+
+    if (result) {
+        auto listResult = dbManager.loadEventsToLinkedList();
+        if (listResult) {
+            HistoricalLinkedList& list = listResult.value();
+            auto eventResult = dbManager.readEvent(result.value());
+            
+            if (eventResult) {
+                list.clear();
+                list.insertAtBeginning(eventResult.value());
+                
+                auto eventsResult = dbManager.getAllEvents();
+                if (eventsResult) {
+                    for (const auto& event : eventsResult.value()) {
+                        if (event.id != result.value()) {
+                            list.insertAtEnd(event);
+                        }
+                    }
+                    
+                    auto saveResult = dbManager.saveLinkedListToDb(list);
+                    if (saveResult) {
+                        std::cout << GREEN << "✓ " << RESET << "Event added at beginning of list with ID: " << result.value() << "\n";
+                    } else {
+                        std::cout << RED << "✗ " << RESET << "Error saving list: " << saveResult.error() << "\n";
+                    }
+                }
+            }
+        } else {
+            std::cout << RED << "✗ " << RESET << "Error loading list: " << listResult.error() << "\n";
+        }
+    } else {
+        std::cout << RED << "✗ " << RESET << "Error adding event: " << result.error() << "\n";
+    }
+}
+
+void CliManager::handleAddEventByDate() {
+    HistoricalEvent newEvent = inputEventDetails();
+    auto result = dbManager.createEvent(newEvent);
+
+    if (result) {
+        auto listResult = dbManager.loadEventsToLinkedList();
+        if (listResult) {
+            HistoricalLinkedList& list = listResult.value();
+            auto eventResult = dbManager.readEvent(result.value());
+            
+            if (eventResult) {
+                list.clear();
+                
+                auto eventsResult = dbManager.getAllEvents();
+                if (eventsResult) {
+                    std::vector<HistoricalEvent> events = eventsResult.value();
+                    for (const auto& event : events) {
+                        if (event.id != result.value()) {
+                            list.insertByDate(event);
+                        }
+                    }
+                    
+                    list.insertByDate(eventResult.value());
+                    
+                    auto saveResult = dbManager.saveLinkedListToDb(list);
+                    if (saveResult) {
+                        std::cout << GREEN << "✓ " << RESET << "Event added in chronological order with ID: " << result.value() << "\n";
+                    } else {
+                        std::cout << RED << "✗ " << RESET << "Error saving list: " << saveResult.error() << "\n";
+                    }
+                }
+            }
+        } else {
+            std::cout << RED << "✗ " << RESET << "Error loading list: " << listResult.error() << "\n";
+        }
+    } else {
+        std::cout << RED << "✗ " << RESET << "Error adding event: " << result.error() << "\n";
     }
 }
 

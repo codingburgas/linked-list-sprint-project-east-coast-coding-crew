@@ -58,6 +58,7 @@ namespace Eccc {
             void insertAtEnd(const HistoricalEvent& event);
             void insertAtBeginning(const HistoricalEvent& event);
             void insertAfter(HistoricalNode* prevNode, const HistoricalEvent& event);
+            void insertByDate(const HistoricalEvent& event);
             bool deleteNode(int id);
             HistoricalNode* find(int id);
 
