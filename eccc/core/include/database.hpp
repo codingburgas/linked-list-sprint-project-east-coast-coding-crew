@@ -4,8 +4,16 @@
 #include <format>
 #include <thread>
 #include <future>
+
+#ifdef __APPLE__
+#include <soci/soci.h>
+#include <soci/postgresql/soci-postgresql.h>
+#endif
+
+#ifdef _WIN32
 #include <../../vendor/soci/include/soci/soci.h>
 #include <../../vendor/soci/include/soci/postgresql/soci-postgresql.h>
+#endif
 
 using NoReturn = std::expected<void, std::string>;
 namespace Eccc {

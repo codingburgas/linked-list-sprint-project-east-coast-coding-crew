@@ -2,7 +2,14 @@
 #include <soci/soci.h>
 #include <ctime>
 #include <fstream>
+
+#ifdef __APPLE__
+#include <nlohmann/json.hpp>
+#endif
+
+#ifdef _WIN32
 #include <../../vendor/nlohmann/json.hpp>
+#endif
 
 namespace Eccc {
     namespace Core {
