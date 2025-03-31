@@ -8,9 +8,13 @@
 #ifndef SOCI_BLOB_EXCHANGE_H_INCLUDED
 #define SOCI_BLOB_EXCHANGE_H_INCLUDED
 
-#include "soci/blob.h"
+/*#include "soci/blob.h"
 #include "soci/into-type.h"
-#include "soci/use-type.h"
+#include "soci/use-type.h"*/
+
+#include <../../vendor/soci/include/soci/blob.h>
+#include <../../vendor/soci/include/soci/into-type.h>
+#include <../../vendor/soci/include/soci/use-type.h>
 // std
 #include <string>
 

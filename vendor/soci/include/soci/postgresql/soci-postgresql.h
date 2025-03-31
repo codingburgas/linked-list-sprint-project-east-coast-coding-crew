@@ -9,7 +9,8 @@
 #ifndef SOCI_POSTGRESQL_H_INCLUDED
 #define SOCI_POSTGRESQL_H_INCLUDED
 
-#include <soci/soci-platform.h>
+//#include <soci/soci-platform.h>
+#include <../../vendor/soci/include/soci/soci-platform.h>
 
 #ifdef SOCI_POSTGRESQL_SOURCE
 # define SOCI_POSTGRESQL_DECL SOCI_DECL_EXPORT
@@ -17,9 +18,12 @@
 # define SOCI_POSTGRESQL_DECL SOCI_DECL_IMPORT
 #endif
 
-#include <soci/soci-backend.h>
-#include "soci/connection-parameters.h"
-#include <libpq-fe.h>
+//#include <soci/soci-backend.h>
+//#include "soci/connection-parameters.h"
+//#include <libpq-fe.h>
+#include <../../vendor/soci/include/soci/soci-backend.h>
+#include <../../vendor/soci/include/soci/connection-parameters.h>
+#include <../../vendor/libpq/include/libpq-fe.h>
 #include <vector>
 
 namespace soci

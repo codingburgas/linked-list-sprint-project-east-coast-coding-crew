@@ -5,9 +5,6 @@
 #include <vector>
 #include <utility>
 
-namespace Eccc {
-namespace Core {
-
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"
 #define RED     "\033[31m"
@@ -18,6 +15,11 @@ namespace Core {
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
 #define BOLD    "\033[1m"
+
+namespace Eccc {
+namespace Core {
+
+
 
 time_t createDate(int year, int month, int day);
 std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input);

@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <set>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <../../vendor/nlohmann/json.hpp>
 #include <chrono>
 #include <thread>
 #include <limits>

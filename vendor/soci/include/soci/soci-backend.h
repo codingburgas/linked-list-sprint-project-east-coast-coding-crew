@@ -8,8 +8,10 @@
 #ifndef SOCI_BACKEND_H_INCLUDED
 #define SOCI_BACKEND_H_INCLUDED
 
-#include "soci/soci-platform.h"
-#include "soci/error.h"
+//#include "soci/soci-platform.h"
+//#include "soci/error.h"
+#include <../../vendor/soci/include/soci/soci-platform.h>
+#include <../../vendor/soci/include/soci/error.h>
 // std
 #include <cstddef>
 #include <map>

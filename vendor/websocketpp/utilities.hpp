@@ -28,7 +28,7 @@
 #ifndef WEBSOCKETPP_UTILITIES_HPP
 #define WEBSOCKETPP_UTILITIES_HPP
 
-#include <websocketpp/common/stdint.hpp>
+#include <../../vendor/websocketpp/common/stdint.hpp>
 
 #include <algorithm>
 #include <string>
@@ -175,6 +175,6 @@ std::string to_hex(char const * input, size_t length);
 } // namespace utility
 } // namespace websocketpp
 
-#include <websocketpp/impl/utilities_impl.hpp>
+#include <../../vendor/websocketpp/impl/utilities_impl.hpp>
 
 #endif // WEBSOCKETPP_UTILITIES_HPP

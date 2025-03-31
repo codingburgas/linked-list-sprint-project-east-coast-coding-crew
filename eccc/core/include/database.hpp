@@ -4,8 +4,9 @@
 #include <format>
 #include <thread>
 #include <future>
-#include <soci/soci.h>
-#include <soci/postgresql/soci-postgresql.h>
+#include <../../vendor/soci/include/soci/soci.h>
+#include <../../vendor/soci/include/soci/postgresql/soci-postgresql.h>
+
 using NoReturn = std::expected<void, std::string>;
 namespace Eccc {
 	namespace Core {

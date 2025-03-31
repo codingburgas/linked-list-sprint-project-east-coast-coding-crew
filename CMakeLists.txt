@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
 
 set(WORKSPACE_NAME "Eccc")
 set(PROJECT_NAME "Core")
@@ -7,18 +7,19 @@ set(DEP_FOLDER "dependencies")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-add_executable(${PROJECT_NAME})
-
 file(GLOB_RECURSE SRC_FILES "eccc/Core/src/*.cpp")
 file(GLOB_RECURSE HEADER_FILES "eccc/Core/include/*.h" "eccc/Core/include/*.hpp")
 
-target_sources(${PROJECT_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILES})
+add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES})
+
+#target_sources(${PROJECT_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${DEP_FOLDER}/libpq/include
