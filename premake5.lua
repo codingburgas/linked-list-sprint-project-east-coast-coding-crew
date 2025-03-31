@@ -1,23 +1,23 @@
 
-  workspace "Eccc"
+  workspace "eccc"
   architecture "x86_64"
   configurations { "Debug", "Release" }
-  project "Core"
+  project "core"
     outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++latest"
-    location "./Eccc/%{prj.name}"
+    location "./eccc/%{prj.name}"
     targetdir ("./bin/" .. outputdir .. "/%{prj.name}")
     objdir ("./bin-int/" .. outputdir .. "/%{prj.name}")
     files {
-      "Eccc/Core/src/**.cpp",
-      "Eccc/Core/include/**.h",
-      "Eccc/Core/include/**.hpp",
+      "eccc/core/src/**.cpp",
+      "eccc/core/include/**.h",
+      "eccc/core/include/**.hpp",
       "./vendor/fmt/src/**.cpp",
       "./vendor/fmt/src/**.c",
       "./vendor/fmt/src/**.h",
-      "Eccc/Core/include/**.hpp"
+      "eccc/core/include/**.hpp"
     }
     includedirs {
       "./vendor/libpq/include",

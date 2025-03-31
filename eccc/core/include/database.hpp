@@ -6,13 +6,13 @@
 #include <future>
 
 #ifdef __APPLE__
-#include <soci/soci.h>
-#include <soci/postgresql/soci-postgresql.h>
+	#include <soci/soci.h>
+	#include <soci/postgresql/soci-postgresql.h>
 #endif
 
 #ifdef _WIN32
-#include <../../vendor/soci/include/soci/soci.h>
-#include <../../vendor/soci/include/soci/postgresql/soci-postgresql.h>
+	#include <../../vendor/soci/include/soci/soci.h>
+	#include <../../vendor/soci/include/soci/postgresql/soci-postgresql.h>
 #endif
 
 using NoReturn = std::expected<void, std::string>;
@@ -52,7 +52,11 @@ namespace Eccc {
 					return &sql;
 				}
 
+				// NON-ASYNC-METHOD FOR CONNECTING TO DB
 				NoReturn connectToDb();
+
+				// ASYNC-METHOD FOR CONNECTING TO DB 
+				ASYNC_NoReturn async_connectToDb(); // (UPDATE MAIN TO HANDLE STD::FUTURE IN CASE OF USING THS)
 
 
 			private:
