@@ -16,9 +16,17 @@
 #define WHITE   "\033[37m"
 #define BOLD    "\033[1m"
 
+#ifdef __APPLE__
+	#define TIME_VAR time_t
+#endif
+
+#ifdef _WIN32
+	#define TIME_VAR std::time_t 
+#endif
+
 namespace Eccc {
 	namespace Core {
-	time_t createDate(int year, int month, int day);
+	TIME_VAR createDate(int year, int month, int day);
 	std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input);
 
 	}

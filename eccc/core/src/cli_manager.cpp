@@ -11,9 +11,6 @@
 #include <chrono>
 #include <thread>
 #include <limits>
-#include <Windows.h>
-#include <fcntl.h>
-#include <io.h>
 
 #ifdef __APPLE__
     #include <nlohmann/json.hpp>

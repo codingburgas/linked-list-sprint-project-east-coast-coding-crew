@@ -5,7 +5,7 @@
 
 namespace Eccc {
     namespace Core {
-       explicit HistoricalLinkedList::HistoricalLinkedList() : head(nullptr), tail(nullptr), size(0) {};
+       HistoricalLinkedList::HistoricalLinkedList() : head(nullptr), tail(nullptr), size(0) {};
         HistoricalLinkedList::~HistoricalLinkedList() {
             clear();
         }

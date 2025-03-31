@@ -19,6 +19,7 @@ namespace Eccc {
 		using GENERIC_HISTORIC_RETURN_TYPE = std::expected<std::vector<HistoricalEvent>, std::string>;
         using GENERIC_NUMBER_RETURN_TYPE = std::expected<int, std::string>;
 		using GENERIC_BOOL_RETURN_TYPE = std::expected<bool, std::string>;
+
         using DATABASE_VARIANT = std::variant<std::shared_ptr<Database>, Database*>;
 
         class HistoricalDbManager {
