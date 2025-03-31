@@ -4,11 +4,11 @@
 #include <fstream>
 
 #ifdef __APPLE__
-#include <nlohmann/json.hpp>
+    #include <nlohmann/json.hpp>
 #endif
 
 #ifdef _WIN32
-#include <../../vendor/nlohmann/json.hpp>
+    #include <../../vendor/nlohmann/json.hpp>
 #endif
 
 namespace Eccc {

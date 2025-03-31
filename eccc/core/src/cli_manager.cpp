@@ -1,4 +1,5 @@
 #define NOMINMAX
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "cli_manager.hpp"
 #include <iostream>
@@ -26,6 +27,7 @@
     #include "../include/utilities.hpp"
     #define TIME_TYPE  std::localtime
     #define TIME_VAR std::time_t 
+    #define LOCAL_TIME_TYPE _localtime64
 #endif
 
 namespace Eccc {
@@ -819,7 +821,7 @@ void CliManager::handleEventCommand(const std::vector<std::string>& args) {
                         std::cout << BOLD << "Location: " << RESET << event.location << "\n";
 
                         char timeBuffer[80];
-                        struct tm* timeInfo = localtime(&event.date);
+                        struct tm* timeInfo = LOCAL_TIME_TYPE(&event.date);
                         strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
 
                         std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
@@ -916,7 +918,7 @@ void CliManager::handleFindEvent(const std::vector<std::string>& args) {
         std::cout << BOLD << "Location: " << RESET << event.location << "\n";
 
         char timeBuffer[80];
-        struct tm* timeInfo = localtime(&event.date);
+        struct tm* timeInfo = LOCAL_TIME_TYPE(&event.date);
         strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
 
         std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
@@ -1376,7 +1378,7 @@ void CliManager::handleListEventsByDate(const std::string& dateStr) {
     
     HistoricalNode* current = list.getHead();
     while (current) {
-        struct tm* timeInfo = localtime(&current->data.date);
+        struct tm* timeInfo = LOCAL_TIME_TYPE(&current->data.date);
         
         if (timeInfo->tm_mon + 1 == month && timeInfo->tm_mday == day) {
             found = true;
@@ -1430,7 +1432,7 @@ void CliManager::handleListEventsByYear(const std::string& yearStr) {
     
     HistoricalNode* current = list.getHead();
     while (current) {
-        struct tm* timeInfo = localtime(&current->data.date);
+        struct tm* timeInfo = LOCAL_TIME_TYPE(&current->data.date);
         
         if (timeInfo->tm_year + 1900 == year) {
             found = true;
@@ -1565,7 +1567,7 @@ void CliManager::displayEventDetails(const HistoricalEvent& event) {
     
     // Format date
     char timeBuffer[80];
-    struct tm* timeInfo = localtime(&event.date);
+    struct tm* timeInfo = LOCAL_TIME_TYPE(&event.date);
     strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
     
     std::cout << BOLD << "║ " << YELLOW << "Date:" << RESET << " " << timeBuffer;
