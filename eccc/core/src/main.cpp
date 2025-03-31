@@ -53,7 +53,7 @@ int main() {
 			return 1;
 		}
 
-		std::shared_ptr<Database> db(dbHandle.value(), [](Database*) {});
+		auto db = dbHandle.value();
 
 		auto connectHandle = db->async_connectToDb();
 		auto connectionResult = connectHandle.get();

@@ -46,7 +46,7 @@ namespace Eccc {
             int size;
 
         public:
-            HistoricalLinkedList();
+            explicit HistoricalLinkedList();
             ~HistoricalLinkedList();
 
             HistoricalLinkedList(const HistoricalLinkedList&) = delete;

@@ -7,6 +7,7 @@
 #include <expected>
 #include <format>
 #include <iostream>
+#include <variant>
 
 namespace Eccc {
     namespace Core {
@@ -18,13 +19,15 @@ namespace Eccc {
 		using GENERIC_HISTORIC_RETURN_TYPE = std::expected<std::vector<HistoricalEvent>, std::string>;
         using GENERIC_NUMBER_RETURN_TYPE = std::expected<int, std::string>;
 		using GENERIC_BOOL_RETURN_TYPE = std::expected<bool, std::string>;
+        using DATABASE_VARIANT = std::variant<std::shared_ptr<Database>, Database*>;
 
         class HistoricalDbManager {
         private:
-            std::shared_ptr<Database> dbConnection;
+			DATABASE_VARIANT dbConnection;
 
         public:
-            explicit HistoricalDbManager(std::shared_ptr<Database> db);
+            HistoricalDbManager(DATABASE_VARIANT);
+            HistoricalDbManager() = default;
             std::expected<bool, std::string> setupSchema();
 
             GENERIC_NUMBER_RETURN_TYPE createEvent(const HistoricalEvent& event);

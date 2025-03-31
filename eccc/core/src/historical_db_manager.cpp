@@ -13,11 +13,17 @@
 
 namespace Eccc {
     namespace Core {
-        HistoricalDbManager::HistoricalDbManager(std::shared_ptr<Database> db) : dbConnection(db) {}
+        HistoricalDbManager::HistoricalDbManager(DATABASE_VARIANT db) : dbConnection(db) {}
 
         std::expected<bool, std::string> HistoricalDbManager::setupSchema() {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+					sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+				}
+				catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+				}
                 bool tableExists = false;
                 
                 try {
@@ -82,7 +88,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::createEvent(const HistoricalEvent& event) -> std::expected<int, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 int newId = -1;
 
                 long long eventDate = static_cast<long long>(event.date);
@@ -112,7 +124,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::readEvent(int id) -> std::expected<HistoricalEvent, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
 
                 HistoricalEvent event;
                 std::string title, description, location, category, leader, participants, result;
@@ -159,7 +177,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::updateEvent(const HistoricalEvent& event) -> std::expected<bool, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
 
                 long long eventDate = static_cast<long long>(event.date);
 
@@ -190,7 +214,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::deleteEvent(int id) -> std::expected<bool, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
 
                 (*sql) << "DELETE FROM historical_events WHERE id = :id", soci::use(id);
 
@@ -204,7 +234,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::getAllEvents() -> std::expected<std::vector<HistoricalEvent>, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 std::vector<HistoricalEvent> events;
 
                 soci::rowset<soci::row> rows = (sql->prepare <<
@@ -237,7 +273,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::getEventsByCategory(const std::string& category) -> std::expected<std::vector<HistoricalEvent>, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 std::vector<HistoricalEvent> events;
 
                 soci::rowset<soci::row> rows = (sql->prepare <<
@@ -271,7 +313,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::getEventsByDateRange(time_t startDate, time_t endDate) -> std::expected<std::vector<HistoricalEvent>, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 std::vector<HistoricalEvent> events;
 
                 long long startTimestamp = static_cast<long long>(startDate);
@@ -308,7 +356,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::getEventsByLocation(const std::string& location) -> std::expected<std::vector<HistoricalEvent>, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 std::vector<HistoricalEvent> events;
 
                 soci::rowset<soci::row> rows = (sql->prepare <<
@@ -342,7 +396,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::getEventsByResult(const std::string& resultPattern) -> std::expected<std::vector<HistoricalEvent>, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 std::vector<HistoricalEvent> events;
 
                 std::string likePattern = "%" + resultPattern + "%";
@@ -628,7 +688,13 @@ namespace Eccc {
 
         auto HistoricalDbManager::saveLinkedListToDb(const HistoricalLinkedList& list) -> std::expected<bool, std::string> {
             try {
-                auto* sql = dbConnection->getSession();
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
                 sql->begin();
 
                 try {

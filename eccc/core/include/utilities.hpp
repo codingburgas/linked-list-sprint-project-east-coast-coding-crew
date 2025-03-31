@@ -17,12 +17,9 @@
 #define BOLD    "\033[1m"
 
 namespace Eccc {
-namespace Core {
+	namespace Core {
+	time_t createDate(int year, int month, int day);
+	std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input);
 
-
-
-time_t createDate(int year, int month, int day);
-std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input);
-
-}
+	}
 }

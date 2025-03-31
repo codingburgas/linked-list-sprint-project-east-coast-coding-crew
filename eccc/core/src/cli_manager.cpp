@@ -38,9 +38,6 @@ void msSleep(int milliseconds) {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-CliManager::CliManager(std::shared_ptr<Database> db) : dbManager(db) {
-}
-
 void CliManager::displayLogo() {
     ;
     std::cout << "\n";
@@ -266,8 +263,8 @@ void CliManager::displayDashboard() {
             categoryCounts[event.category]++;
             // Extract year from date
             
-            TIME_VAR* date = new TIME_VAR(event.date);
-			std::unique_ptr<struct tm> timeInfo = std::make_unique<struct tm>(*TIME_TYPE(date));
+            TIME_VAR date = event.date; 
+            std::unique_ptr<struct tm> timeInfo = std::make_unique<struct tm>();
 
 			int year = timeInfo->tm_year + 1900;
             eventsByYear[year]++;
