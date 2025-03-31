@@ -2,7 +2,7 @@
 #include <soci/soci.h>
 #include <ctime>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <../../vendor/nlohmann/json.hpp>
 
 namespace Eccc {
     namespace Core {

@@ -1,4 +1,5 @@
 #include "utilities.hpp"
+#include <vector>
 
 namespace Eccc {
 namespace Core {
