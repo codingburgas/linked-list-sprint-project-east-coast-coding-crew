@@ -252,10 +252,10 @@ void CliManager::displayDashboard() {
         
         for (const auto& event : events) {
             categoryCounts[event.category]++;
-            
             // Extract year from date
+            
             TIME_VAR* date = new TIME_VAR(event.date);
-			struct tm* timeInfo = new struct tm(*TIME_TYPE(date));
+			std::unique_ptr<struct tm> timeInfo = std::make_unique<struct tm>(*TIME_TYPE(date));
 
 			int year = timeInfo->tm_year + 1900;
             eventsByYear[year]++;
@@ -267,7 +267,6 @@ void CliManager::displayDashboard() {
                 location = location.substr(0, commaPos);
             }
             eventsByLocation[location]++;
-            delete timeInfo;
         }
         
         // Stats section with colored indicators
