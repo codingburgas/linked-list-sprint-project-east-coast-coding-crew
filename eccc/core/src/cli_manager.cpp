@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include "cli_manager.hpp"
 #include <iostream>
 #include <format>
@@ -8,6 +10,9 @@
 #include <chrono>
 #include <thread>
 #include <limits>
+#include <Windows.h>
+#include <fcntl.h>
+#include <io.h>
 
 #ifdef __APPLE__
     #include <nlohmann/json.hpp>
@@ -35,6 +40,7 @@ CliManager::CliManager(std::shared_ptr<Database> db) : dbManager(db) {
 }
 
 void CliManager::displayLogo() {
+    ;
     std::cout << "\n";
     std::cout << CYAN << " _____          _   _____      _       _            " << RESET << "\n";
     std::cout << CYAN << "|  __ \\        | | |  __ \\    (_)     | |           " << RESET << "\n";
@@ -48,6 +54,7 @@ void CliManager::displayLogo() {
 }
 
 void CliManager::displayCommandHelp() {
+    ;
     std::cout << BOLD << "\nCommands:" << RESET << "\n";
     std::cout << GREEN << "> event add" << RESET << "            Add a new historical event\n";
     std::cout << GREEN << "> event add -f" << RESET << "         Add first event as first node\n";
@@ -78,6 +85,7 @@ void CliManager::displayCommandHelp() {
 }
 
 void CliManager::run() {
+    ;
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     displayLogo();
 
@@ -168,6 +176,7 @@ void CliManager::run() {
 }
 
 void CliManager::handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode) {
+    ;
     if (command == "exit" || command == "quit") {
         std::cout << "Exiting program.\n";
         running = false;
@@ -209,6 +218,7 @@ void CliManager::handleCommandInput(const std::string& command, const std::vecto
 }
 
 void CliManager::displayDashboard() {
+    //;
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     // Modern logo and title with animation effect
@@ -415,6 +425,7 @@ void CliManager::displayInteractiveMenu() {
 }
 
 void CliManager::displaySearchSubmenu() {
+    //;
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
@@ -488,6 +499,7 @@ void CliManager::displaySearchSubmenu() {
 }
 
 void CliManager::displaySortSubmenu() {
+    //;
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
@@ -520,6 +532,7 @@ void CliManager::displaySortSubmenu() {
 }
 
 void CliManager::displayExportSubmenu() {
+    //;
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
@@ -638,6 +651,7 @@ void CliManager::displayExportSubmenu() {
 }
 
 void CliManager::displayPressEnterToContinue() {
+    //;
     std::cout << "\n" << BOLD << "Press ENTER to continue..." << RESET;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string dummy;
@@ -714,6 +728,7 @@ void CliManager::addSampleData() {
 }
 
 HistoricalEvent CliManager::inputEventDetails() {
+    //;
     HistoricalEvent event;
 
     std::cout << CYAN << "Enter event title: " << RESET;
@@ -751,6 +766,7 @@ HistoricalEvent CliManager::inputEventDetails() {
 }
 
 void CliManager::handleEventCommand(const std::vector<std::string>& args) {
+    //;
     if (args.empty()) {
         std::cout << RED << "✗ " << RESET << "Missing event subcommand. Try 'help' for a list of commands.\n";
         return;
@@ -847,6 +863,7 @@ void CliManager::handleEventCommand(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleAddEvent() {
+    //;
     HistoricalEvent newEvent = inputEventDetails();
     auto result = dbManager.createEvent(newEvent);
 
@@ -858,6 +875,7 @@ void CliManager::handleAddEvent() {
 }
 
 void CliManager::handleListEvents() {
+    //;
     auto result = dbManager.loadEventsToLinkedList();
 
     if (result) {
@@ -913,6 +931,7 @@ void CliManager::handleFindEvent(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
+    //;
     if (args.size() < 2) {
         std::cout << RED << "✗ " << RESET << "Missing category name. Usage: event category <n>\n";
         return;
@@ -953,6 +972,7 @@ void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleLocationSearch(const std::vector<std::string>& args) {
+    //;
     if (args.size() < 2) {
         std::cout << RED << "✗ " << RESET << "Missing location name. Usage: event location <n>\n";
         return;
@@ -993,6 +1013,7 @@ void CliManager::handleLocationSearch(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleSortByDate() {
+    //;
     auto result = dbManager.loadEventsToLinkedList();
 
     if (result) {
@@ -1016,6 +1037,7 @@ void CliManager::handleSortByDate() {
 }
 
 void CliManager::handleSortByTitle() {
+    //;
     auto result = dbManager.loadEventsToLinkedList();
 
     if (result) {
@@ -1039,6 +1061,7 @@ void CliManager::handleSortByTitle() {
 }
 
 void CliManager::handleDeleteEvent(const std::vector<std::string>& args) {
+    //;
     if (args.size() < 2) {
         std::cout << RED << "✗ " << RESET << "Missing event ID. Usage: event delete <id>\n";
         return;
@@ -1062,6 +1085,7 @@ void CliManager::handleDeleteEvent(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleUpdateEvent(const std::vector<std::string>& args) {
+    //;
     if (args.size() < 2) {
         std::cout << RED << "✗ " << RESET << "Missing event ID. Usage: event update <id>\n";
         return;
@@ -1096,6 +1120,7 @@ void CliManager::handleUpdateEvent(const std::vector<std::string>& args) {
 }
 
 void CliManager::handleExportCommand(const std::vector<std::string>& args) {
+    //;
     if (args.empty()) {
         std::cout << RED << "✗ " << RESET << "Missing export options. Try 'help' for command syntax.\n";
         return;
@@ -1304,6 +1329,7 @@ void CliManager::handleExportCommand(const std::vector<std::string>& args) {
 }
 
 ExportFormat CliManager::getFormatFromString(const std::string& formatStr) {
+    //;
     if (formatStr == "txt" || formatStr == "text") {
         return ExportFormat::TEXT;
     }
@@ -1319,6 +1345,7 @@ ExportFormat CliManager::getFormatFromString(const std::string& formatStr) {
 }
 
 void CliManager::handleListEventsByDate(const std::string& dateStr) {
+    //;
     int month, day;
     
     if (sscanf(dateStr.c_str(), "%d/%d", &month, &day) != 2) {
@@ -1370,6 +1397,7 @@ void CliManager::handleListEventsByDate(const std::string& dateStr) {
 }
 
 void CliManager::handleListEventsByYear(const std::string& yearStr) {
+    //;
     int year;
     
     try {
@@ -1423,6 +1451,7 @@ void CliManager::handleListEventsByYear(const std::string& yearStr) {
 }
 
 void CliManager::handleAddFirstEvent() {
+    //;
     if (dbManager.getAllEvents().value_or(std::vector<HistoricalEvent>()).size() > 0) {
         std::cout << RED << "✗ " << RESET << "Database already contains events. This command can only be used on an empty database.\n";
         return;
@@ -1439,6 +1468,7 @@ void CliManager::handleAddFirstEvent() {
 }
 
 void CliManager::handleAddEventAtBeginning() {
+    //;
     HistoricalEvent newEvent = inputEventDetails();
     auto result = dbManager.createEvent(newEvent);
 

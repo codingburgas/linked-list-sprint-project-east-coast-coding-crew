@@ -53,7 +53,7 @@ namespace Eccc {
 				}
 
 				// NON-ASYNC-METHOD FOR CONNECTING TO DB
-				NoReturn connectToDb();
+				std::future<NoReturn> connectToDb();
 
 				// ASYNC-METHOD FOR CONNECTING TO DB 
 				ASYNC_NoReturn async_connectToDb(); // (UPDATE MAIN TO HANDLE STD::FUTURE IN CASE OF USING THS)
