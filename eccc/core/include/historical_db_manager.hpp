@@ -15,6 +15,9 @@ namespace Eccc {
             CSV,
             JSON
         };
+		using GENERIC_HISTORIC_RETURN_TYPE = std::expected<std::vector<HistoricalEvent>, std::string>;
+        using GENERIC_NUMBER_RETURN_TYPE = std::expected<int, std::string>;
+		using GENERIC_BOOL_RETURN_TYPE = std::expected<bool, std::string>;
 
         class HistoricalDbManager {
         private:
@@ -22,25 +25,25 @@ namespace Eccc {
 
         public:
             explicit HistoricalDbManager(std::shared_ptr<Database> db);
-            auto setupSchema() -> std::expected<bool, std::string>;
+            std::expected<bool, std::string> setupSchema();
 
-            auto createEvent(const HistoricalEvent& event) -> std::expected<int, std::string>;
-            auto readEvent(int id) -> std::expected<HistoricalEvent, std::string>;
-            auto updateEvent(const HistoricalEvent& event) -> std::expected<bool, std::string>;
-            auto deleteEvent(int id) -> std::expected<bool, std::string>;
+            GENERIC_NUMBER_RETURN_TYPE createEvent(const HistoricalEvent& event);
+            std::expected<HistoricalEvent, std::string> readEvent(int id);
+            GENERIC_BOOL_RETURN_TYPE updateEvent(const HistoricalEvent& event);
+            GENERIC_BOOL_RETURN_TYPE deleteEvent(int id);
 
-            auto getAllEvents() -> std::expected<std::vector<HistoricalEvent>, std::string>;
-            auto getEventsByCategory(const std::string& category) -> std::expected<std::vector<HistoricalEvent>, std::string>;
-            auto getEventsByDateRange(time_t startDate, time_t endDate) -> std::expected<std::vector<HistoricalEvent>, std::string>;
-            auto getEventsByLocation(const std::string& location) -> std::expected<std::vector<HistoricalEvent>, std::string>;
-            auto getEventsByResult(const std::string& resultPattern) -> std::expected<std::vector<HistoricalEvent>, std::string>;
+            GENERIC_HISTORIC_RETURN_TYPE getAllEvents();
+            GENERIC_HISTORIC_RETURN_TYPE getEventsByCategory(const std::string& category);
+            GENERIC_HISTORIC_RETURN_TYPE getEventsByDateRange(time_t startDate, time_t endDate);
+            GENERIC_HISTORIC_RETURN_TYPE getEventsByLocation(const std::string& location);
+            GENERIC_HISTORIC_RETURN_TYPE getEventsByResult(const std::string& resultPattern);
 
-            auto loadEventsToLinkedList() -> std::expected<HistoricalLinkedList, std::string>;
-            auto saveLinkedListToDb(const HistoricalLinkedList& list) -> std::expected<bool, std::string>;
+            std::expected<HistoricalLinkedList, std::string> loadEventsToLinkedList();
+            GENERIC_BOOL_RETURN_TYPE saveLinkedListToDb(const HistoricalLinkedList& list);
 
-            auto exportAllEventTitles(const std::string& filename, ExportFormat format) -> std::expected<bool, std::string>;
-            auto exportEventsByCategory(const std::string& category, const std::string& filename, ExportFormat format) -> std::expected<bool, std::string>;
-            auto exportEventsByResult(const std::string& resultPattern, const std::string& filename, ExportFormat format) -> std::expected<bool, std::string>;
+            GENERIC_BOOL_RETURN_TYPE exportAllEventTitles(const std::string& filename, ExportFormat format);
+            GENERIC_BOOL_RETURN_TYPE exportEventsByCategory(const std::string& category, const std::string& filename, ExportFormat format);
+            GENERIC_BOOL_RETURN_TYPE exportEventsByResult(const std::string& resultPattern, const std::string& filename, ExportFormat format);
         };
 
     }

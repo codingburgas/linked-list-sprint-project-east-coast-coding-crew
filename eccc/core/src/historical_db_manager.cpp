@@ -15,7 +15,7 @@ namespace Eccc {
     namespace Core {
         HistoricalDbManager::HistoricalDbManager(std::shared_ptr<Database> db) : dbConnection(db) {}
 
-        auto HistoricalDbManager::setupSchema() -> std::expected<bool, std::string> {
+        std::expected<bool, std::string> HistoricalDbManager::setupSchema() {
             try {
                 auto* sql = dbConnection->getSession();
                 bool tableExists = false;

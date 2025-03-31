@@ -1,9 +1,19 @@
 #include "utilities.hpp"
+#include <vector>
+
+#ifdef __APPLE__
+    #define TIME_VAR time_t 
+#endif
+
+#ifdef _WIN32
+    #define TIME_VAR std::time_t 
+#endif
+
 
 namespace Eccc {
 namespace Core {
 
-time_t createDate(int year, int month, int day) {
+TIME_VAR createDate(int year, int month, int day) {
     struct tm timeInfo = {};
     timeInfo.tm_year = year - 1900;
     timeInfo.tm_mon = month - 1;

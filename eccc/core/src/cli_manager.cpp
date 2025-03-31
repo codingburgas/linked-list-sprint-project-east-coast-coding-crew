@@ -1,5 +1,4 @@
 #include "cli_manager.hpp"
-#include "utilities.hpp"
 #include <iostream>
 #include <format>
 #include <ctime>
@@ -12,10 +11,16 @@
 
 #ifdef __APPLE__
     #include <nlohmann/json.hpp>
+    #include "utilities.hpp"
+    #define TIME_TYPE  timeInfolocaltime
+    #define TIME_VAR time_t
 #endif
 
 #ifdef _WIN32
-    include <../../vendor/nlohmann/json.hpp>
+    #include <../../vendor/nlohmann/json.hpp>
+    #include "../include/utilities.hpp"
+    #define TIME_TYPE  std::localtime
+    #define TIME_VAR std::time_t 
 #endif
 
 namespace Eccc {
@@ -249,9 +254,10 @@ void CliManager::displayDashboard() {
             categoryCounts[event.category]++;
             
             // Extract year from date
-            time_t date = event.date;
-            struct tm* timeInfo = localtime(&date);
-            int year = timeInfo->tm_year + 1900;
+            TIME_VAR* date = new TIME_VAR(event.date);
+			struct tm* timeInfo = new struct tm(*TIME_TYPE(date));
+
+			int year = timeInfo->tm_year + 1900;
             eventsByYear[year]++;
             
             // Get first part of location (usually city)
@@ -261,6 +267,7 @@ void CliManager::displayDashboard() {
                 location = location.substr(0, commaPos);
             }
             eventsByLocation[location]++;
+            delete timeInfo;
         }
         
         // Stats section with colored indicators
