@@ -48,6 +48,7 @@ namespace Eccc {
             GENERIC_BOOL_RETURN_TYPE exportAllEventTitles(const std::string& filename, ExportFormat format);
             GENERIC_BOOL_RETURN_TYPE exportEventsByCategory(const std::string& category, const std::string& filename, ExportFormat format);
             GENERIC_BOOL_RETURN_TYPE exportEventsByResult(const std::string& resultPattern, const std::string& filename, ExportFormat format);
+            GENERIC_BOOL_RETURN_TYPE wipeDatabase();
         };
 
     }

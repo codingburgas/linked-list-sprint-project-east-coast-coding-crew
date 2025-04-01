@@ -43,7 +43,7 @@ namespace Eccc {
         private:
             HistoricalNode* head;
             HistoricalNode* tail;
-            int size;
+            std::size_t size;
 
         public:
             explicit HistoricalLinkedList();
@@ -70,13 +70,16 @@ namespace Eccc {
             HistoricalNode* findByLocation(const std::string& location);
             HistoricalNode* findByCategory(const std::string& category);
 
-            int getSize() const;
+            std::size_t getSize() const;
             bool isEmpty() const;
             void display() const;
             void clear();
 
             HistoricalNode* getHead() const;
             HistoricalNode* getTail() const;
+
+        private:
+            static std::string formatDateSafe(time_t date);
         };
     }
 }

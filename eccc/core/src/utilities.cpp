@@ -12,11 +12,19 @@ namespace Eccc {
     namespace Core {
 
 TIME_VAR createDate(int year, int month, int day) {
-    struct tm timeInfo = {};
-    timeInfo.tm_year = year - 1900;
-    timeInfo.tm_mon = month - 1;
-    timeInfo.tm_mday = day;
-    return mktime(&timeInfo);
+    if (year >= 1970) {
+        struct tm timeInfo = {};
+        timeInfo.tm_year = year - 1900;
+        timeInfo.tm_mon = month - 1;
+        timeInfo.tm_mday = day;
+        timeInfo.tm_hour = 12;
+        timeInfo.tm_isdst = -1;
+        
+        return mktime(&timeInfo);
+    } else {
+        long long encoded = year * 10000 + month * 100 + day;
+        return -encoded;
+    }
 }
 
 std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input) {

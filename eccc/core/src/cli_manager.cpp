@@ -31,13 +31,34 @@
 namespace Eccc {
 namespace Core {
 
-// Portable sleep function (replaces usleep for better compatibility)
+// Portable sleep function
 void msSleep(int milliseconds) {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
+std::string CliManager::formatDate(time_t date) {
+    char timeBuffer[80];
+    
+    if (date < 0) {
+        long long encoded = -date;
+        int year = encoded / 10000;
+        int month = (encoded % 10000) / 100;
+        int day = encoded % 100;
+        
+        sprintf(timeBuffer, "%04d-%02d-%02d", year, month, day);
+    } else {
+        struct tm* timeInfo = LOCAL_TIME_TYPE(&date);
+        if (timeInfo != nullptr) {
+            strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
+        } else {
+            strcpy(timeBuffer, "1970-01-01");
+        }
+    }
+    
+    return std::string(timeBuffer);
+}
+
 void CliManager::displayLogo() {
-    ;
     std::cout << "\n";
     std::cout << CYAN << " _____          _   _____      _       _            " << RESET << "\n";
     std::cout << CYAN << "|  __ \\        | | |  __ \\    (_)     | |           " << RESET << "\n";
@@ -51,7 +72,6 @@ void CliManager::displayLogo() {
 }
 
 void CliManager::displayCommandHelp() {
-    ;
     std::cout << BOLD << "\nCommands:" << RESET << "\n";
     std::cout << GREEN << "> event add" << RESET << "            Add a new historical event\n";
     std::cout << GREEN << "> event add -f" << RESET << "         Add first event as first node\n";
@@ -76,14 +96,14 @@ void CliManager::displayCommandHelp() {
     std::cout << GREEN << "> dashboard" << RESET << "            Display the dashboard\n";
     std::cout << GREEN << "> menu" << RESET << "                 Show interactive menu\n";
     std::cout << GREEN << "> sample" << RESET << "               Add sample data\n";
+    std::cout << GREEN << "> wipe" << RESET << "                 Wipe all data from database\n";
     std::cout << GREEN << "> help" << RESET << "                 View all commands\n";
     std::cout << GREEN << "> exit" << RESET << "                 Exit program\n";
     std::cout << "\n" << BOLD << "Export formats:" << RESET << " txt, csv, json\n";
 }
 
 void CliManager::run() {
-    ;
-    std::cout << "\033[2J\033[1;1H";  // Clear screen
+    std::cout << "\033[2J\033[1;1H";
     displayLogo();
 
     auto schemaResult = dbManager.setupSchema();
@@ -100,7 +120,6 @@ void CliManager::run() {
 
     while (running) {
         if (commandMode == 0) {
-            // Interactive mode - single key input
             std::string input;
             std::getline(std::cin, input);
             
@@ -109,55 +128,51 @@ void CliManager::run() {
                 continue;
             }
             
-            // Handle single key commands
             if (input.length() == 1) {
                 char key = input[0];
                 switch (key) {
-                    case '1': // View All Events
+                    case '1':
                         handleListEvents();
                         displayPressEnterToContinue();
                         displayDashboard();
                         break;
-                    case '2': // Add New Event
+                    case '2':
                         handleAddEvent();
                         displayPressEnterToContinue();
                         displayDashboard();
                         break;
-                    case '3': // Search Events
+                    case '3':
                         displayModernSearchMenu();
                         break;
-                    case '4': // Sort Events
+                    case '4':
                         displayModernSortMenu();
                         break;
-                    case '5': // Export Data
+                    case '5':
                         displayModernExportMenu();
                         break;
-                    case '6': // Interactive Menu (old style)
+                    case '6':
                         displayInteractiveMenu();
                         break;
-                    case '7': // Command Mode
+                    case '7':
                         commandMode = 1;
                         std::cout << "\n" << YELLOW << "Switched to command mode. Type 'dashboard' to return to the dashboard." << RESET << "\n";
                         std::cout << "\n" << BOLD << YELLOW << "hist-cli" << RESET << " " << BLUE << "$ " << RESET;
                         break;
                     case 'q':
-                    case 'Q': // Exit
+                    case 'Q':
                         std::cout << "Exiting program.\n";
                         running = false;
                         break;
                     default:
-                        // Try to parse as a command
                         auto [command, args] = Eccc::Core::parseCommand(input);
                         handleCommandInput(command, args, running, commandMode);
                         break;
                 }
             } else {
-                // Parse as a command
                 auto [command, args] = Eccc::Core::parseCommand(input);
                 handleCommandInput(command, args, running, commandMode);
             }
         } else {
-            // Command mode - traditional CLI
             std::cout << "\n" << BOLD << YELLOW << "hist-cli" << RESET << " " << BLUE << "$ " << RESET;
             std::string input;
             std::getline(std::cin, input);
@@ -173,7 +188,6 @@ void CliManager::run() {
 }
 
 void CliManager::handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode) {
-    ;
     if (command == "exit" || command == "quit") {
         std::cout << "Exiting program.\n";
         running = false;
@@ -187,6 +201,13 @@ void CliManager::handleCommandInput(const std::string& command, const std::vecto
     }
     else if (command == "sample") {
         addSampleData();
+        if (commandMode == 0) {
+            displayPressEnterToContinue();
+            displayDashboard();
+        }
+    }
+    else if (command == "wipe") {
+        handleWipeDatabase();
         if (commandMode == 0) {
             displayPressEnterToContinue();
             displayDashboard();
@@ -215,59 +236,51 @@ void CliManager::handleCommandInput(const std::string& command, const std::vecto
 }
 
 void CliManager::displayDashboard() {
-    //;
-    std::cout << "\033[2J\033[1;1H";  // Clear screen
+    std::cout << "\033[2J\033[1;1H";
     
-    // Modern logo and title with animation effect
-    std::cout << "\n";
-    for (const auto& line : {
-        CYAN + std::string(" ██╗  ██╗██╗███████╗████████╗ ██████╗ ██████╗ ██╗   ██╗") + RESET,
-        CYAN + std::string(" ██║  ██║██║██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝") + RESET,
-        MAGENTA + std::string(" ███████║██║███████╗   ██║   ██║   ██║██████╔╝ ╚████╔╝ ") + RESET,
-        MAGENTA + std::string(" ██╔══██║██║╚════██║   ██║   ██║   ██║██╔══██╗  ╚██╔╝  ") + RESET,
-        GREEN + std::string(" ██║  ██║██║███████║   ██║   ╚██████╔╝██║  ██║   ██║   ") + RESET,
-        GREEN + std::string(" ╚═╝  ╚═╝╚═╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ") + RESET
-    }) {
-        std::cout << line << "\n";
-        msSleep(30);
+    for (char c : std::string("Past Pointer")) {
+        std::cout << BOLD << GREEN << c << RESET;
+        msSleep(20);
     }
-    
-    // Subtitle with color fade
-    std::string subtitle = "INTERACTIVE DATABASE EXPLORER";
-    std::cout << "\n                  ";
-    for (size_t i = 0; i < subtitle.length(); i++) {
-        int colorCode = 36 - (i % 3);  // Cycle through cyan(36), magenta(35), and blue(34)
-        std::cout << "\033[1;" << colorCode << "m" << subtitle[i] << RESET;
+    std::cout << " ";
+    for (char c : std::string("Dashboard")) {
+        std::cout << BOLD << YELLOW << c << RESET;
         msSleep(20);
     }
     std::cout << "\n\n";
     
-    // Modern dashboard with box drawing characters
     std::cout << "╭─────────────────────────────────────────────────────────╮\n";
     std::cout << "│ " << BOLD << YELLOW << "DASHBOARD" << RESET << "                                         │\n";
     std::cout << "├─────────────────────────────────────────────────────────┤\n";
     
-    // Event statistics section
     auto eventsResult = dbManager.getAllEvents();
     if (eventsResult) {
         const auto& events = eventsResult.value();
         
-        // Count events by category and other metrics
         std::map<std::string, int> categoryCounts;
         std::map<int, int> eventsByYear;
         std::map<std::string, int> eventsByLocation;
         
         for (const auto& event : events) {
             categoryCounts[event.category]++;
-            // Extract year from date
             
             TIME_VAR date = event.date; 
-            std::unique_ptr<struct tm> timeInfo = std::make_unique<struct tm>();
-
-			int year = timeInfo->tm_year + 1900;
+            int year;
+            
+            if (date < 0) {
+                long long encoded = -date;
+                year = encoded / 10000;
+            } else {
+                struct tm* timeInfo = LOCAL_TIME_TYPE(&date);
+                if (timeInfo != nullptr) {
+                    year = timeInfo->tm_year + 1900;
+                } else {
+                    year = 1970;
+                }
+            }
+            
             eventsByYear[year]++;
             
-            // Get first part of location (usually city)
             std::string location = event.location;
             size_t commaPos = location.find(',');
             if (commaPos != std::string::npos) {
@@ -276,18 +289,15 @@ void CliManager::displayDashboard() {
             eventsByLocation[location]++;
         }
         
-        // Stats section with colored indicators
         std::cout << "│ " << CYAN << "📊" << RESET << " " << BOLD << "Stats" << RESET << "                                             │\n";
         std::cout << "│   " << BOLD << "Events:" << RESET << " " << YELLOW << events.size() << RESET << " total                                     │\n";
         
-        // Category breakdown - simple text without bar charts
         std::cout << "│ " << CYAN << "🏷️" << RESET << " " << BOLD << "Categories" << RESET << "                                        │\n";
         
         int catDisplayed = 0;
         for (const auto& [category, count] : categoryCounts) {
-            if (catDisplayed++ >= 3) break;  // Show only top 3
+            if (catDisplayed++ >= 3) break;
             
-            // Format display with proper padding to avoid overflow
             std::cout << "│   " << category << ": " << count;
             int nameLength = static_cast<int>(category.length()) + static_cast<int>(std::to_string(count).length()) + 4;
             int padding = 49 - nameLength;
@@ -295,7 +305,6 @@ void CliManager::displayDashboard() {
             std::cout << "│\n";
         }
         
-        // Timeline visualization
         if (!eventsByYear.empty()) {
             int minYear = eventsByYear.begin()->first;
             int maxYear = eventsByYear.rbegin()->first;
@@ -318,16 +327,26 @@ void CliManager::displayDashboard() {
             }
             std::cout << "┤   │\n";
             
-            // Draw year markers below the axis
+            // Draw year markers below the axis - ensure we get equal spacing
             std::cout << "│    ";
             int totalYears = maxYear - minYear;
             int yearStep = totalYears / 5;  // Show 5 year labels
             if (yearStep < 1) yearStep = 1;
             
+            // Calculate years with equal spacing
+            int years[6];
             for (int i = 0; i <= 5; i++) {
-                int year = minYear + (i * yearStep);
-                std::cout << year;
-                int yearWidth = static_cast<int>(std::to_string(year).length());
+                years[i] = minYear + (i * yearStep);
+                // Make sure the last marker is the max year
+                if (i == 5) {
+                    years[i] = maxYear;
+                }
+            }
+            
+            // Display years with proper spacing
+            for (int i = 0; i <= 5; i++) {
+                std::cout << years[i];
+                int yearWidth = static_cast<int>(std::to_string(years[i]).length());
                 int spacesToNextYear = 10 - yearWidth;
                 if (i < 5) {
                     for (int j = 0; j < spacesToNextYear; j++) {
@@ -372,7 +391,8 @@ void CliManager::displayInteractiveMenu() {
     std::cout << BOLD << "║ " << RESET << " " << BOLD << "4." << RESET << " Sort events                                      " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "║ " << RESET << " " << BOLD << "5." << RESET << " Delete an event                                  " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "║ " << RESET << " " << BOLD << "6." << RESET << " Export data                                      " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "7." << RESET << " Return to dashboard                              " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "7." << RESET << " Wipe database                                    " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "8." << RESET << " Return to dashboard                              " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "║ " << RESET << " " << BOLD << "0." << RESET << " Exit program                                     " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "╚════════════════════════════════════════════════════════╝" << RESET << "\n";
     
@@ -410,7 +430,13 @@ void CliManager::displayInteractiveMenu() {
     } else if (input == "6") {
         displayExportSubmenu();
     } else if (input == "7") {
+        handleWipeDatabase();
+        displayPressEnterToContinue();
+        displayInteractiveMenu();
+    } else if (input == "8") {
         displayDashboard();
+        displayPressEnterToContinue();
+        displayInteractiveMenu();
     } else if (input == "0") {
         std::cout << "Exiting program.\n";
         exit(0);
@@ -657,70 +683,111 @@ void CliManager::displayPressEnterToContinue() {
 
 void CliManager::addSampleData() {
     HistoricalEvent event1;
-    event1.title = "Declaration of Independence";
-    event1.description = "The United States Declaration of Independence was adopted by the Second Continental Congress.";
-    event1.location = "Philadelphia, Pennsylvania";
-    event1.date = createDate(1776, 7, 4);
-    event1.category = "Political";
+    event1.title = "World War II Begins";
+    event1.description = "Germany invades Poland, marking the beginning of World War II in Europe.";
+    event1.location = "Poland";
+    event1.date = createDate(1939, 9, 1);
+    event1.category = "War";
     event1.significance = 10;
-    event1.leader = "Thomas Jefferson";
-    event1.participants = "Continental Congress, 13 American colonies";
-    event1.result = "Formation of the United States of America";
+    event1.leader = "Adolf Hitler";
+    event1.participants = "Nazi Germany, Poland, Britain, France";
+    event1.result = "Led to formation of Allied Powers and eventually Axis defeat in 1945.";
 
     HistoricalEvent event2;
-    event2.title = "Moon Landing";
-    event2.description = "Apollo 11 was the spaceflight that first landed humans on the Moon.";
+    event2.title = "Apollo 11 Moon Landing";
+    event2.description = "Neil Armstrong becomes the first human to set foot on the Moon.";
     event2.location = "Moon";
     event2.date = createDate(1969, 7, 20);
-    event2.category = "Scientific";
+    event2.category = "Space Exploration";
     event2.significance = 9;
     event2.leader = "Neil Armstrong";
     event2.participants = "NASA, Neil Armstrong, Buzz Aldrin, Michael Collins";
-    event2.result = "First humans on the Moon";
+    event2.result = "Marked a major achievement in space exploration and US-Soviet space race.";
 
     HistoricalEvent event3;
-    event3.title = "World Wide Web Invention";
-    event3.description = "Tim Berners-Lee invented the World Wide Web while working at CERN.";
-    event3.location = "CERN, Switzerland";
-    event3.date = createDate(1989, 3, 12);
-    event3.category = "Technology";
+    event3.title = "Declaration of Independence";
+    event3.description = "American colonies declare independence from Great Britain.";
+    event3.location = "Philadelphia, USA";
+    event3.date = createDate(1776, 7, 4);
+    event3.category = "Politics";
     event3.significance = 10;
-    event3.leader = "Tim Berners-Lee";
-    event3.participants = "CERN researchers";
-    event3.result = "Creation of the World Wide Web";
+    event3.leader = "Thomas Jefferson";
+    event3.participants = "Continental Congress";
+    event3.result = "Led to the American Revolutionary War and formation of the United States.";
 
     HistoricalEvent event4;
     event4.title = "Fall of the Berlin Wall";
-    event4.description = "The fall of the Berlin Wall, which had separated East and West Berlin since 1961.";
+    event4.description = "The Berlin Wall falls, allowing free movement between East and West Berlin.";
     event4.location = "Berlin, Germany";
     event4.date = createDate(1989, 11, 9);
-    event4.category = "Political";
+    event4.category = "Politics";
     event4.significance = 8;
-    event4.leader = "Civil protesters";
-    event4.participants = "East and West German citizens";
-    event4.result = "Reunification of Germany";
+    event4.leader = "";
+    event4.participants = "";
+    event4.result = "Led to German reunification and collapse of communist regimes in Eastern Europe.";
 
     HistoricalEvent event5;
-    event5.title = "First Powered Flight";
-    event5.description = "The Wright brothers made the first controlled, sustained flight of a powered, heavier-than-air aircraft.";
-    event5.location = "Kitty Hawk, North Carolina";
-    event5.date = createDate(1903, 12, 17);
+    event5.title = "First iPhone Released";
+    event5.description = "Apple releases the first iPhone, revolutionizing mobile technology.";
+    event5.location = "United States";
+    event5.date = createDate(2007, 6, 29);
     event5.category = "Technology";
-    event5.significance = 9;
-    event5.leader = "Orville and Wilbur Wright";
-    event5.participants = "Wright brothers";
-    event5.result = "Beginning of the aviation era";
+    event5.significance = 7;
+    event5.leader = "";
+    event5.participants = "";
+    event5.result = "Sparked the smartphone revolution and created the modern app ecosystem.";
+
+    HistoricalEvent event6;
+    event6.title = "Founding of First Bulgarian Empire";
+    event6.description = "Establishment of the First Bulgarian Empire by Khan Asparuh after the Battle of Ongal.";
+    event6.location = "Bulgaria";
+    event6.date = createDate(681, 4, 8);
+    event6.category = "Politics";
+    event6.significance = 9;
+    event6.leader = "Khan Asparuh";
+    event6.participants = "Bulgars, Slavs";
+    event6.result = "Created the first Bulgarian state, recognized by the Byzantine Empire.";
 
     auto result1 = dbManager.createEvent(event1);
     auto result2 = dbManager.createEvent(event2);
     auto result3 = dbManager.createEvent(event3);
     auto result4 = dbManager.createEvent(event4);
     auto result5 = dbManager.createEvent(event5);
+    auto result6 = dbManager.createEvent(event6);
 
-    if (result1 && result2 && result3 && result4 && result5) {
+    if (result1 && result2 && result3 && result4 && result5 && result6) {
         std::cout << GREEN << "✓ " << RESET << "Sample data added successfully.\n";
     } else {
         std::cout << RED << "✗ " << RESET << "Error adding sample data.\n";
+    }
+}
+
+void CliManager::handleWipeDatabase() {
+    std::cout << "\033[2J\033[1;1H";  // Clear screen
+    std::cout << RED << "⚠️ WARNING: DATABASE WIPE ⚠️" << RESET << "\n\n";
+    std::cout << "This action will " << RED << "PERMANENTLY DELETE" << RESET << " all events from the database.\n";
+    std::cout << "This operation cannot be undone.\n\n";
+    std::cout << BOLD << "Are you sure you want to continue? (y/n): " << RESET;
+    
+    std::string confirmation;
+    std::getline(std::cin, confirmation);
+    
+    if (confirmation == "y" || confirmation == "Y") {
+        std::cout << "\nWiping database";
+        for (int i = 0; i < 3; i++) {
+            msSleep(300);
+            std::cout << ".";
+        }
+        
+        auto result = dbManager.wipeDatabase();
+        
+        if (result) {
+            std::cout << "\n\n" << GREEN << "✓ " << RESET << "Database wiped successfully.\n";
+        } else {
+            std::cout << "\n\n" << RED << "✗ " << RESET << "Error wiping database: " << result.error() << "\n";
+        }
+    } else {
+        std::cout << "\n" << BLUE << "i " << RESET << "Database wipe canceled.\n";
     }
 }
 
@@ -815,11 +882,7 @@ void CliManager::handleEventCommand(const std::vector<std::string>& args) {
                         std::cout << BOLD << "Description: " << RESET << event.description << "\n";
                         std::cout << BOLD << "Location: " << RESET << event.location << "\n";
 
-                        char timeBuffer[80];
-                        struct tm* timeInfo = LOCAL_TIME_TYPE(&event.date);
-                        strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
-
-                        std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
+                        std::cout << BOLD << "Date: " << RESET << formatDate(event.date) << "\n";
                         std::cout << BOLD << "Category: " << RESET << event.category << "\n";
                         std::cout << BOLD << "Significance: " << RESET << event.significance << "\n";
                         std::cout << BOLD << "Leader: " << RESET << event.leader << "\n";
@@ -881,7 +944,24 @@ void CliManager::handleListEvents() {
             std::cout << YELLOW << "! " << RESET << "No events found in the database.\n";
         } else {
             std::cout << CYAN << "Total events: " << list.getSize() << RESET << "\n";
-            list.display();
+            
+            HistoricalNode* current = list.getHead();
+            while (current) {
+                std::cout << BOLD << "ID: " << RESET << current->data.id << "\n";
+                std::cout << BOLD << "Title: " << RESET << current->data.title << "\n";
+                std::cout << BOLD << "Description: " << RESET << current->data.description << "\n";
+                std::cout << BOLD << "Location: " << RESET << current->data.location << "\n";
+                
+                std::cout << BOLD << "Date: " << RESET << formatDate(current->data.date) << "\n";
+                
+                std::cout << BOLD << "Category: " << RESET << current->data.category << "\n";
+                std::cout << BOLD << "Significance: " << RESET << current->data.significance << "\n";
+                std::cout << BOLD << "Leader: " << RESET << current->data.leader << "\n";
+                std::cout << BOLD << "Participants: " << RESET << current->data.participants << "\n";
+                std::cout << BOLD << "Result: " << RESET << current->data.result << "\n";
+                std::cout << "------------------------\n";
+                current = current->next;
+            }
         }
     } else {
         std::cout << RED << "✗ " << RESET << "Error loading events: " << result.error() << "\n";
@@ -907,11 +987,7 @@ void CliManager::handleFindEvent(const COMMAND_VARIANT_TYPE args) {
         std::cout << BOLD << "Description: " << RESET << event.description << "\n";
         std::cout << BOLD << "Location: " << RESET << event.location << "\n";
 
-        char timeBuffer[80];
-        struct tm* timeInfo = LOCAL_TIME_TYPE(&event.date);
-        strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
-
-        std::cout << BOLD << "Date: " << RESET << timeBuffer << "\n";
+        std::cout << BOLD << "Date: " << RESET << formatDate(event.date) << "\n";
         std::cout << BOLD << "Category: " << RESET << event.category << "\n";
         std::cout << BOLD << "Significance: " << RESET << event.significance << "\n";
         std::cout << BOLD << "Leader: " << RESET << event.leader << "\n";

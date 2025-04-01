@@ -237,7 +237,7 @@ namespace Eccc {
             }
         }
 
-        int HistoricalLinkedList::getSize() const {
+        std::size_t HistoricalLinkedList::getSize() const {
             return size;
         }
 
@@ -258,12 +258,7 @@ namespace Eccc {
                 std::cout << "Title: " << event.title << std::endl;
                 std::cout << "Description: " << event.description << std::endl;
                 std::cout << "Location: " << event.location << std::endl;
-
-                char timeBuffer[80];
-                struct tm* timeInfo = localtime(&event.date);
-                strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
-
-                std::cout << "Date: " << timeBuffer << std::endl;
+                std::cout << "Date: " << formatDateSafe(event.date) << std::endl;
                 std::cout << "Category: " << event.category << std::endl;
                 std::cout << "Significance: " << event.significance << std::endl;
                 std::cout << "Leader: " << event.leader << std::endl;
@@ -273,6 +268,28 @@ namespace Eccc {
 
                 current = current->next;
             }
+        }
+
+        std::string HistoricalLinkedList::formatDateSafe(time_t date) {
+            char timeBuffer[80];
+            
+            if (date < 0) {
+                long long encoded = -date;
+                int year = encoded / 10000;
+                int month = (encoded % 10000) / 100;
+                int day = encoded % 100;
+                
+                sprintf(timeBuffer, "%04d-%02d-%02d", year, month, day);
+            } else {
+                struct tm* timeInfo = localtime(&date);
+                if (timeInfo != nullptr) {
+                    strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d", timeInfo);
+                } else {
+                    strcpy(timeBuffer, "1970-01-01");
+                }
+            }
+            
+            return std::string(timeBuffer);
         }
 
         void HistoricalLinkedList::clear() {

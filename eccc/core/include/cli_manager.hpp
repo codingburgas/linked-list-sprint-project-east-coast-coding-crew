@@ -39,6 +39,7 @@ namespace Eccc {
 
             static HistoricalEvent inputEventDetails();
             static std::pair<std::string, std::vector<std::string>> parseCommand(const std::string& input);
+            static std::string formatDate(time_t date);
 
             void handleEventCommand(const std::vector<std::string>& args);
             void handleAddEvent();
@@ -53,9 +54,9 @@ namespace Eccc {
             void handleListEventsByDate(const std::string& dateStr);
             void handleListEventsByYear(const std::string& yearStr);
             void handleExportCommand(const std::vector<std::string>& args);
+            void handleWipeDatabase();
             ExportFormat getFormatFromString(const std::string& formatStr);
     
-            // Interactive UI methods
             void displayDashboard();
             void displayInteractiveMenu();
             void displaySearchSubmenu();
@@ -65,14 +66,12 @@ namespace Eccc {
             void displayEventDetails(const HistoricalEvent& event);
             void displayProgressBar(int current, int total, const std::string& label);
     
-            // Modern UI methods
             void displayModernSearchMenu();
             void displayModernSortMenu();
             void displayModernExportMenu();
             void handleModernExport(int exportType);
             void handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode);
 
-            // Keep these private helper functions but don't expose them in the interface
             void handleFindEvent(const COMMAND_VARIANT_TYPE args);
             void handleCategorySearch(const COMMAND_VARIANT_TYPE args);
             void handleLocationSearch(const COMMAND_VARIANT_TYPE args);

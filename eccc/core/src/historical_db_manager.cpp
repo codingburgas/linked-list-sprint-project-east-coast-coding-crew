@@ -750,5 +750,24 @@ namespace Eccc {
             }
         }
 
+        auto HistoricalDbManager::wipeDatabase() -> std::expected<bool, std::string> {
+            try {
+                soci::session* sql;
+                try {
+                    sql = std::get<std::shared_ptr<Database>>(dbConnection)->getSession();
+                }
+                catch (const std::bad_variant_access&) {
+                    sql = std::get<Database*>(dbConnection)->getSession();
+                }
+
+                (*sql) << "DELETE FROM historical_events";
+                return true;
+            } catch (const soci::soci_error& e) {
+                return std::unexpected(std::format("Database error wiping data: {}", e.what()));
+            } catch (const std::exception& e) {
+                return std::unexpected(std::format("Error wiping data: {}", e.what()));
+            }
+        }
+
     }
 }
