@@ -35,11 +35,12 @@
 #endif
 
 
-using namespace Eccc::Core;
+
+using Eccc::Core::Database, Eccc::Core::CliManager;
 int main() {
 
 	#ifdef _WIN32
-		auto enabled = enable().get();
+		bool enabled = enable().get();
 	#endif
 
 	#ifdef __APPLE__
