@@ -13,7 +13,23 @@
 namespace Eccc {
     namespace Core {
 
-        class CliManager {
+        class CliGeneralLogger {
+            protected:
+                virtual void displayDashboard() = 0;
+                virtual void displayInteractiveMenu() = 0;
+                virtual void displaySearchSubmenu() = 0;
+                virtual void displaySortSubmenu() = 0;
+                virtual void displayExportSubmenu() = 0;
+                virtual void displayPressEnterToContinue() = 0;
+                virtual void displayEventDetails(const HistoricalEvent& event) = 0;
+                virtual void displayProgressBar(int current, int total, const std::string& label) = 0;
+
+                virtual void displayModernSearchMenu() = 0;
+                virtual void displayModernSortMenu() = 0;
+                virtual void displayModernExportMenu() = 0;
+        };
+
+        class CliManager : protected CliGeneralLogger {
         public:
             using COMMAND_VARIANT_TYPE = std::variant<std::vector<std::string>, std::pair<std::string, std::string>>;
 	        explicit CliManager() = default;
@@ -57,18 +73,18 @@ namespace Eccc {
             void handleWipeDatabase();
             ExportFormat getFormatFromString(const std::string& formatStr);
     
-            void displayDashboard();
-            void displayInteractiveMenu();
-            void displaySearchSubmenu();
-            void displaySortSubmenu();
-            void displayExportSubmenu();
-            void displayPressEnterToContinue();
-            void displayEventDetails(const HistoricalEvent& event);
-            void displayProgressBar(int current, int total, const std::string& label);
+            void displayDashboard() override;
+            void displayInteractiveMenu() override;
+            void displaySearchSubmenu() override;
+            void displaySortSubmenu() override;
+            void displayExportSubmenu() override;
+            void displayPressEnterToContinue() override;
+            void displayEventDetails(const HistoricalEvent& event) override;
+            void displayProgressBar(int current, int total, const std::string& label) override;
     
-            void displayModernSearchMenu();
-            void displayModernSortMenu();
-            void displayModernExportMenu();
+            void displayModernSearchMenu() override;
+            void displayModernSortMenu() override;
+            void displayModernExportMenu() override;
             void handleModernExport(int exportType);
             void handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode);
 

@@ -1713,7 +1713,7 @@ void CliManager::displayEventDetails(const HistoricalEvent& event) {
     std::cout << BOLD << "╚════════════════════════════════════════════════════════╝" << RESET << "\n";
 }
 
-void CliManager::displayProgressBar(int current, int total, const std::string& label) {
+void CliManager::displayProgressBar(int current, int total, const std::string& label){
     float percentage = static_cast<float>(current) / total;
     int barWidth = 50;
     int completedWidth = static_cast<int>(percentage * barWidth);
