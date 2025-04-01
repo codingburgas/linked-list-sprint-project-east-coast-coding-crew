@@ -7,6 +7,10 @@
 *.vcxproj
 *.vcxproj.filters
 *.sln
+*.cmake
+*.idea
+*.vs
+*.vscode
 bin/
 bin-int/
 build/
