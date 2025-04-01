@@ -887,16 +887,16 @@ void CliManager::handleListEvents() {
     }
 }
 
-void CliManager::handleFindEvent(COMMAND_VARIANT_TYPE args) {
-    int id;
+void CliManager::handleFindEvent(const COMMAND_VARIANT_TYPE args) {
+    int* id = new int;
     try {
-		id = std::stoi(std::get<std::vector<std::string>>(args).at(1));
+		*id = std::stoi(std::get<std::vector<std::string>>(args).at(1));
     }
     catch (const std::bad_variant_access&) {
-		id = std::stoi(std::get<std::pair<std::string, std::string>>(args).second);
+		*id = std::stoi(std::get<std::pair<std::string, std::string>>(args).second);
 	}
 
-    auto result = dbManager.readEvent(id);
+    auto result = dbManager.readEvent(*id);
 
     if (result) {
         const HistoricalEvent& event = result.value();
@@ -919,9 +919,10 @@ void CliManager::handleFindEvent(COMMAND_VARIANT_TYPE args) {
     } else {
         std::cout << RED << "✗ " << RESET << "Error finding event: " << result.error() << "\n";
     }
+    delete id;
 }
 
-void CliManager::handleCategorySearch(COMMAND_VARIANT_TYPE args) {
+void CliManager::handleCategorySearch(const COMMAND_VARIANT_TYPE args) {
     //;
 
     std::string categoryQuery;
@@ -966,7 +967,7 @@ void CliManager::handleCategorySearch(COMMAND_VARIANT_TYPE args) {
     }
 }
 
-void CliManager::handleLocationSearch(COMMAND_VARIANT_TYPE args){
+void CliManager::handleLocationSearch(const COMMAND_VARIANT_TYPE args){
     //;
     std::string locationQuery;
     try {

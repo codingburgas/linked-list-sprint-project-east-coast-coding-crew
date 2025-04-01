@@ -73,9 +73,9 @@ namespace Eccc {
             void handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode);
 
             // Keep these private helper functions but don't expose them in the interface
-            void handleFindEvent(COMMAND_VARIANT_TYPE args);
-            void handleCategorySearch(COMMAND_VARIANT_TYPE args);
-            void handleLocationSearch(COMMAND_VARIANT_TYPE args);
+            void handleFindEvent(const COMMAND_VARIANT_TYPE args);
+            void handleCategorySearch(const COMMAND_VARIANT_TYPE args);
+            void handleLocationSearch(const COMMAND_VARIANT_TYPE args);
         };
 
     }
