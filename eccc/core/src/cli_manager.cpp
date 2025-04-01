@@ -17,6 +17,7 @@
     #include "utilities.hpp"
     #define TIME_TYPE  timeInfolocaltime
     #define TIME_VAR time_t
+    #define LOCAL_TIME_TYPE localtime
 #endif
 
 #ifdef _WIN32
