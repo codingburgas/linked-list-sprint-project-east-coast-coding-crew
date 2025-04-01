@@ -15,6 +15,7 @@ namespace Eccc {
 
         class CliManager {
         public:
+            using COMMAND_VARIANT_TYPE = std::variant<std::vector<std::string>, std::pair<std::string, std::string>>;
 	        explicit CliManager() = default;
             explicit CliManager(std::variant<std::shared_ptr<Database>, Database*> db) {
                 try {
@@ -72,9 +73,9 @@ namespace Eccc {
             void handleCommandInput(const std::string& command, const std::vector<std::string>& args, bool& running, int& commandMode);
 
             // Keep these private helper functions but don't expose them in the interface
-            void handleFindEvent(const std::vector<std::string>& args);
-            void handleCategorySearch(const std::vector<std::string>& args);
-            void handleLocationSearch(const std::vector<std::string>& args);
+            void handleFindEvent(COMMAND_VARIANT_TYPE args);
+            void handleCategorySearch(COMMAND_VARIANT_TYPE args);
+            void handleLocationSearch(COMMAND_VARIANT_TYPE args);
         };
 
     }

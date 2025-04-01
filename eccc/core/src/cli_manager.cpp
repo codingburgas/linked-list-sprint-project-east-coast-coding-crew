@@ -458,7 +458,7 @@ void CliManager::displaySearchSubmenu() {
         std::string categoryInput;
         std::getline(std::cin, categoryInput);
         
-        handleCategorySearch({"category", categoryInput});
+        handleCategorySearch(std::pair{("category"), categoryInput});
         displayPressEnterToContinue();
         displaySearchSubmenu();
     } else if (input == "3") {
@@ -466,7 +466,7 @@ void CliManager::displaySearchSubmenu() {
         std::string locationInput;
         std::getline(std::cin, locationInput);
         
-        handleLocationSearch({"location", locationInput});
+        handleLocationSearch(std::pair{"location", locationInput});
         displayPressEnterToContinue();
         displaySearchSubmenu();
     } else if (input == "4") {
@@ -798,10 +798,10 @@ void CliManager::handleEventCommand(const std::vector<std::string>& args) {
                 handleListEventsByYear(args[2]);
             }
             else if (args[1] == "-c" && args.size() > 2) {
-                handleCategorySearch({args[0], args[2]});
+                handleCategorySearch(std::pair{args[0], args[2]});
             }
             else if (args[1] == "-l" && args.size() > 2) {
-                handleLocationSearch({args[0], args[2]});
+                handleLocationSearch(std::pair{args[0], args[2]});
             }
             else if (args[1] == "id" && args.size() > 2) {
                 try {
@@ -887,19 +887,14 @@ void CliManager::handleListEvents() {
     }
 }
 
-void CliManager::handleFindEvent(const std::vector<std::string>& args) {
-    if (args.size() < 2) {
-        std::cout << RED << "✗ " << RESET << "Missing event ID. Usage: event find <id>\n";
-        return;
-    }
-
+void CliManager::handleFindEvent(COMMAND_VARIANT_TYPE args) {
     int id;
     try {
-        id = std::stoi(args[1]);
-    } catch (...) {
-        std::cout << RED << "✗ " << RESET << "Invalid ID. Please enter a number.\n";
-        return;
+		id = std::stoi(std::get<std::vector<std::string>>(args).at(1));
     }
+    catch (const std::bad_variant_access&) {
+		id = std::stoi(std::get<std::pair<std::string, std::string>>(args).second);
+	}
 
     auto result = dbManager.readEvent(id);
 
@@ -926,14 +921,18 @@ void CliManager::handleFindEvent(const std::vector<std::string>& args) {
     }
 }
 
-void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
+void CliManager::handleCategorySearch(COMMAND_VARIANT_TYPE args) {
     //;
-    if (args.size() < 2) {
-        std::cout << RED << "✗ " << RESET << "Missing category name. Usage: event category <n>\n";
-        return;
+
+    std::string categoryQuery;
+
+    try {
+        categoryQuery = std::get<std::vector<std::string>>(args).at(1);
+    }
+    catch (const std::bad_variant_access&) {
+        categoryQuery = std::get<std::pair<std::string, std::string>>(args).second;
     }
 
-    std::string categoryQuery = args[1];
     auto eventsResult = dbManager.getAllEvents();
 
     if (!eventsResult) {
@@ -967,14 +966,15 @@ void CliManager::handleCategorySearch(const std::vector<std::string>& args) {
     }
 }
 
-void CliManager::handleLocationSearch(const std::vector<std::string>& args) {
+void CliManager::handleLocationSearch(COMMAND_VARIANT_TYPE args){
     //;
-    if (args.size() < 2) {
-        std::cout << RED << "✗ " << RESET << "Missing location name. Usage: event location <n>\n";
-        return;
+    std::string locationQuery;
+    try {
+         locationQuery = std::get<std::vector<std::string>>(args).at(1);
     }
-
-    std::string locationQuery = args[1];
+    catch (const std::bad_variant_access&) {
+        locationQuery = std::get<std::pair<std::string, std::string>>(args).second;
+    }
     auto eventsResult = dbManager.getAllEvents();
 
     if (!eventsResult) {
@@ -1718,7 +1718,7 @@ void CliManager::displayModernSearchMenu() {
         std::string categoryInput;
         std::getline(std::cin, categoryInput);
         
-        handleCategorySearch({"category", categoryInput});
+        handleCategorySearch(std::pair{"category", categoryInput});
         displayPressEnterToContinue();
         displayModernSearchMenu();
     } 
@@ -1728,7 +1728,7 @@ void CliManager::displayModernSearchMenu() {
         std::string locationInput;
         std::getline(std::cin, locationInput);
         
-        handleLocationSearch({"location", locationInput});
+        handleLocationSearch(std::pair{"location", locationInput});
         displayPressEnterToContinue();
         displayModernSearchMenu();
     } 
