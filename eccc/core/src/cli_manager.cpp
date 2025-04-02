@@ -365,15 +365,15 @@ void CliManager::displayDashboard() {
     
     // Navigation options with keyboard shortcuts
     std::cout << "├─────────────────────────────────────────────────────────┤\n";
-    std::cout << "│ " << BOLD << YELLOW << "NAVIGATION" << RESET << "                                        │\n";
+    std::cout << "│ " << BOLD << YELLOW << "NAVIGATION" << RESET << "                                              │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[1]" << RESET << " View All Events       " << CYAN << "[2]" << RESET << " Add New Event         │\n";
-    std::cout << "│  " << CYAN << "[3]" << RESET << " Search Events         " << CYAN << "[4]" << RESET << " Sort Events           │\n";
-    std::cout << "│  " << CYAN << "[5]" << RESET << " Export Data           " << CYAN << "[6]" << RESET << " Interactive Menu      │\n";
-    std::cout << "│  " << CYAN << "[7]" << RESET << " Command Mode          " << CYAN << "[Q]" << RESET << " Exit                  │\n";
+    std::cout << "│  " << CYAN << "[1]" << RESET << " View All Events       " << CYAN << "[2]" << RESET << " Add New Event            │\n";
+    std::cout << "│  " << CYAN << "[3]" << RESET << " Search Events         " << CYAN << "[4]" << RESET << " Sort Events              │\n";
+    std::cout << "│  " << CYAN << "[5]" << RESET << " Export Data           " << CYAN << "[6]" << RESET << " Interactive Menu         │\n";
+    std::cout << "│  " << CYAN << "[7]" << RESET << " Command Mode          " << CYAN << "[Q]" << RESET << " Exit                     │\n";
     std::cout << "│                                                         │\n";
     std::cout << "├─────────────────────────────────────────────────────────┤\n";
-    std::cout << "│ " << BOLD << "Type a number [1-7] to select or enter a command:" << RESET << "        │\n";
+    std::cout << "│ " << BOLD << "Type a number [1-7] to select or enter a command:" << RESET << "       │\n";
     std::cout << "╰─────────────────────────────────────────────────────────╯\n\n";
     
     std::cout << YELLOW << "hist-cli" << RESET << " " << BLUE << "➤ " << RESET;
