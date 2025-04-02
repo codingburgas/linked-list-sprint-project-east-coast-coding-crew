@@ -526,11 +526,11 @@ void CliManager::displaySortSubmenu() {
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
-    std::cout << BOLD << "║ " << CYAN << "SORT EVENTS" << RESET << BOLD << "                                        ║" << RESET << "\n";
+    std::cout << BOLD << "║ " << CYAN << "SORT EVENTS" << RESET << BOLD << "                                            ║" << RESET << "\n";
     std::cout << BOLD << "╠════════════════════════════════════════════════════════╣" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " Sort by Date                                     " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Sort by Title                                    " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Return to main menu                              " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " Sort by Date                                       " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Sort by Title                                      " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Return to main menu                                " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "╚════════════════════════════════════════════════════════╝" << RESET << "\n";
     
     std::cout << BOLD << "Enter your choice: " << RESET;
