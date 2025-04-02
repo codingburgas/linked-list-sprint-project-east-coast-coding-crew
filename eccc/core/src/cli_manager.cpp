@@ -383,17 +383,17 @@ void CliManager::displayInteractiveMenu() {
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
-    std::cout << BOLD << "║ " << CYAN << "INTERACTIVE MENU" << RESET << BOLD << "                                    ║" << RESET << "\n";
+    std::cout << BOLD << "║ " << CYAN << "INTERACTIVE MENU" << RESET << BOLD << "                                       ║" << RESET << "\n";
     std::cout << BOLD << "╠════════════════════════════════════════════════════════╣" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " View all events                                  " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Add a new event                                  " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Search events                                    " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "4." << RESET << " Sort events                                      " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "5." << RESET << " Delete an event                                  " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "6." << RESET << " Export data                                      " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "7." << RESET << " Wipe database                                    " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "8." << RESET << " Return to dashboard                              " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "0." << RESET << " Exit program                                     " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " View all events                                    " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Add a new event                                    " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Search events                                      " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "4." << RESET << " Sort events                                        " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "5." << RESET << " Delete an event                                    " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "6." << RESET << " Export data                                        " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "7." << RESET << " Wipe database                                      " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "8." << RESET << " Return to dashboard                                " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "0." << RESET << " Exit program                                       " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "╚════════════════════════════════════════════════════════╝" << RESET << "\n";
     
     std::cout << BOLD << "Enter your choice: " << RESET;
@@ -452,14 +452,14 @@ void CliManager::displaySearchSubmenu() {
     std::cout << "\033[2J\033[1;1H";  // Clear screen
     
     std::cout << BOLD << "╔════════════════════════════════════════════════════════╗" << RESET << "\n";
-    std::cout << BOLD << "║ " << CYAN << "SEARCH EVENTS" << RESET << BOLD << "                                       ║" << RESET << "\n";
+    std::cout << BOLD << "║ " << CYAN << "SEARCH EVENTS" << RESET << BOLD << "                                          ║" << RESET << "\n";
     std::cout << BOLD << "╠════════════════════════════════════════════════════════╣" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " Search by ID                                     " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Search by Category                               " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Search by Location                               " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "4." << RESET << " Search by Date (MM/DD)                           " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "5." << RESET << " Search by Year                                   " << BOLD << "║" << RESET << "\n";
-    std::cout << BOLD << "║ " << RESET << " " << BOLD << "6." << RESET << " Return to main menu                              " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "1." << RESET << " Search by ID                                       " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "2." << RESET << " Search by Category                                 " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "3." << RESET << " Search by Location                                 " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "4." << RESET << " Search by Date (MM/DD)                             " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "5." << RESET << " Search by Year                                     " << BOLD << "║" << RESET << "\n";
+    std::cout << BOLD << "║ " << RESET << " " << BOLD << "6." << RESET << " Return to main menu                                " << BOLD << "║" << RESET << "\n";
     std::cout << BOLD << "╚════════════════════════════════════════════════════════╝" << RESET << "\n";
     
     std::cout << BOLD << "Enter your choice: " << RESET;
