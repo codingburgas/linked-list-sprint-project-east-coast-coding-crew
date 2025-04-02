@@ -238,7 +238,7 @@ void CliManager::handleCommandInput(const std::string& command, const std::vecto
 void CliManager::displayDashboard() {
     std::cout << "\033[2J\033[1;1H";
     
-    for (char c : std::string("Past Pointer")) {
+    for (char c : std::string("ECCC")) {
         std::cout << BOLD << GREEN << c << RESET;
         msSleep(20);
     }
@@ -250,7 +250,7 @@ void CliManager::displayDashboard() {
     std::cout << "\n\n";
     
     std::cout << "╭─────────────────────────────────────────────────────────╮\n";
-    std::cout << "│ " << BOLD << YELLOW << "DASHBOARD" << RESET << "                                         │\n";
+    std::cout << "│ " << BOLD << YELLOW << "DASHBOARD" << RESET << "                                               │\n";
     std::cout << "├─────────────────────────────────────────────────────────┤\n";
     
     auto eventsResult = dbManager.getAllEvents();
@@ -289,10 +289,10 @@ void CliManager::displayDashboard() {
             eventsByLocation[location]++;
         }
         
-        std::cout << "│ " << CYAN << "📊" << RESET << " " << BOLD << "Stats" << RESET << "                                             │\n";
-        std::cout << "│   " << BOLD << "Events:" << RESET << " " << YELLOW << events.size() << RESET << " total                                     │\n";
+        std::cout << "│ " << CYAN << "📊" << RESET << " " << BOLD << "Stats" << RESET << "                                                │\n";
+        std::cout << "│   " << BOLD << "Events:" << RESET << " " << YELLOW << events.size() << RESET << " total                                       │\n";
         
-        std::cout << "│ " << CYAN << "🏷️" << RESET << " " << BOLD << "Categories" << RESET << "                                        │\n";
+        std::cout << "│ " << CYAN << "🏷️" << RESET << " " << BOLD << "Categories" << RESET << "                                          │\n";
         
         int catDisplayed = 0;
         for (const auto& [category, count] : categoryCounts) {
@@ -300,7 +300,7 @@ void CliManager::displayDashboard() {
             
             std::cout << "│   " << category << ": " << count;
             int nameLength = static_cast<int>(category.length()) + static_cast<int>(std::to_string(count).length()) + 4;
-            int padding = 49 - nameLength;
+            int padding = 56 - nameLength;
             for (int i = 0; i < padding; i++) std::cout << " ";
             std::cout << "│\n";
         }
@@ -310,17 +310,17 @@ void CliManager::displayDashboard() {
             int maxYear = eventsByYear.rbegin()->first;
             
             std::cout << "│ " << CYAN << "📅" << RESET << " " << BOLD << "Timeline" << RESET << " (" << minYear << " → " << maxYear << ")";
-            int headerPadding = 37 - static_cast<int>(std::to_string(minYear).length()) - static_cast<int>(std::to_string(maxYear).length());
+            int headerPadding = 39 - static_cast<int>(std::to_string(minYear).length()) - static_cast<int>(std::to_string(maxYear).length());
             for (int i = 0; i < headerPadding; i++) std::cout << " ";
             std::cout << "│\n";
             
             // Draw the timeline with proper spacing
             std::cout << "│   ";
-            for (int i = 0; i < 51; i++) std::cout << " ";
+            for (int i = 0; i < 54; i++) std::cout << " ";
             std::cout << "│\n";
             
             // Draw the axis with cleaner formatting
-            std::cout << "│   ├";
+            std::cout << "│  ├";
             for (int i = 0; i < 50; i++) {
                 if (i % 10 == 0) std::cout << "┼";
                 else std::cout << "─";
@@ -328,7 +328,7 @@ void CliManager::displayDashboard() {
             std::cout << "┤   │\n";
             
             // Draw year markers below the axis - ensure we get equal spacing
-            std::cout << "│    ";
+            std::cout << "│   ";
             int totalYears = maxYear - minYear;
             int yearStep = totalYears / 5;  // Show 5 year labels
             if (yearStep < 1) yearStep = 1;
