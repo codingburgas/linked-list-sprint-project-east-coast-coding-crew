@@ -1907,11 +1907,11 @@ void CliManager::displayModernExportMenu() {
     std::cout << "│                                                         │\n";
     std::cout << "│  " << GREEN << "[1]" << RESET << " 📋 Export Event Titles    " << YELLOW << "List all event names" << RESET << "     │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << GREEN << "[2]" << RESET << " 🏷️ Export by Category     " << YELLOW << "Group events by type" << RESET << "     │\n";
+    std::cout << "│  " << GREEN << "[2]" << RESET << " 🏷️ Export by Category    " << YELLOW << "Group events by type" << RESET << "     │\n";
     std::cout << "│                                                         │\n";
     std::cout << "│  " << GREEN << "[3]" << RESET << " 🎯 Export by Result       " << YELLOW << "Filter by outcomes" << RESET << "       │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << GREEN << "[B]" << RESET << " 🔙 Back to Dashboard                                │\n";
+    std::cout << "│  " << GREEN << "[B]" << RESET << " 🔙 Back to Dashboard                               │\n";
     std::cout << "│                                                         │\n";
     std::cout << "╰─────────────────────────────────────────────────────────╯\n\n";
     
