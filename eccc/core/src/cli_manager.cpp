@@ -1751,15 +1751,15 @@ void CliManager::displayModernSearchMenu() {
     std::cout << "│                                                         │\n";
     std::cout << "│  " << CYAN << "[1]" << RESET << " 🔍 Search by ID          " << YELLOW << "Find a specific event" << RESET << "     │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[2]" << RESET << " 🏷️ Search by Category    " << YELLOW << "Filter by event type" << RESET << "     │\n";
+    std::cout << "│  " << CYAN << "[2]" << RESET << " 🏷️ Search by Category   " << YELLOW << "Filter by event type" << RESET << "      │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[3]" << RESET << " 📍 Search by Location    " << YELLOW << "Find events by place" << RESET << "     │\n";
+    std::cout << "│  " << CYAN << "[3]" << RESET << " 📍 Search by Location    " << YELLOW << "Find events by place" << RESET << "      │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[4]" << RESET << " 📅 Search by Date        " << YELLOW << "Filter by month/day" << RESET << "      │\n";
+    std::cout << "│  " << CYAN << "[4]" << RESET << " 📅 Search by Date        " << YELLOW << "Filter by month/day" << RESET << "       │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[5]" << RESET << " 📆 Search by Year        " << YELLOW << "Find events in a year" << RESET << "    │\n";
+    std::cout << "│  " << CYAN << "[5]" << RESET << " 📆 Search by Year        " << YELLOW << "Find events in a year" << RESET << "     │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << CYAN << "[B]" << RESET << " 🔙 Back to Dashboard                                │\n";
+    std::cout << "│  " << CYAN << "[B]" << RESET << " 🔙 Back to Dashboard                               │\n";
     std::cout << "│                                                         │\n";
     std::cout << "╰─────────────────────────────────────────────────────────╯\n\n";
     
