@@ -1856,7 +1856,7 @@ void CliManager::displayModernSortMenu() {
     std::cout << "│                                                         │\n";
     std::cout << "│  " << MAGENTA << "[2]" << RESET << " 📝 Sort by Title         " << YELLOW << "Alphabetical order" << RESET << "        │\n";
     std::cout << "│                                                         │\n";
-    std::cout << "│  " << MAGENTA << "[B]" << RESET << " 🔙 Back to Dashboard                                │\n";
+    std::cout << "│  " << MAGENTA << "[B]" << RESET << " 🔙 Back to Dashboard                               │\n";
     std::cout << "│                                                         │\n";
     std::cout << "╰─────────────────────────────────────────────────────────╯\n\n";
     
