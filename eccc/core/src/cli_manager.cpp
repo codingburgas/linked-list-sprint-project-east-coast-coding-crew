@@ -60,15 +60,15 @@ std::string CliManager::formatDate(time_t date) {
 
 void CliManager::displayLogo() {
     std::cout << "\n";
-    std::cout << CYAN << " _____          _   _____      _       _            " << RESET << "\n";
-    std::cout << CYAN << "|  __ \\        | | |  __ \\    (_)     | |           " << RESET << "\n";
-    std::cout << CYAN << "| |__) |_ _ ___| |_| |__) |___ _ _ __ | |_ ___ _ __ " << RESET << "\n";
-    std::cout << GREEN << "|  ___/ _` / __| __|  ___/ _ \\ | '_ \\| __/ _ \\ '__|" << RESET << "\n";
-    std::cout << GREEN << "| |  | (_| \\__ \\ |_| |   | (_) | | | | ||  __/ |   " << RESET << "\n";
-    std::cout << GREEN << "|_|   \\__,_|___/\\__|_|    \\___/|_| |_|\\__\\___|_|   " << RESET << "\n";
+    std::cout << CYAN <<  "                 _______ ____  ____  ____ " << RESET << "\n";
+    std::cout << CYAN <<  "                 | ____|| ___|| ___|| ___|" << RESET << "\n";
+    std::cout << CYAN <<  "                 | |__  | |   | |   | |   " << RESET << "\n";
+    std::cout << GREEN << "                 | ___| | |   | |   | |   " << RESET << "\n";
+    std::cout << GREEN << "                 | |___ | |__ | |__ | |__ " << RESET << "\n";
+    std::cout << GREEN << "                 |_____||____||____||____|" << RESET << "\n";
     std::cout << "\n";
     std::cout << MAGENTA << "               Historical Events Database" << RESET << "\n";
-    std::cout << YELLOW << "                     v1.0.0" << RESET << "\n\n";
+    std::cout << YELLOW << "                          v1.0.0" << RESET << "\n\n";
 }
 
 void CliManager::displayCommandHelp() {
