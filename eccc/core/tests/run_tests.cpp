@@ -55,14 +55,21 @@ int main(int argc, char* argv[]) {
         std::function<int()> function;
     };
     
-    // Prepare command for database_test with appropriate options
+    // Prepare commands with platform-specific executable paths
+    #ifdef _WIN32
+    std::string linkedListTestCmd = "historical_linked_list_test.exe";
+    std::string dbTestCmd = "database_test.exe";
+    #else
+    std::string linkedListTestCmd = "./historical_linked_list_test";
     std::string dbTestCmd = "./database_test";
+    #endif
+    
     if (useDatabase) {
         dbTestCmd += " --use-db";
     }
     
     std::vector<TestSuite> testSuites = {
-        {"Historical Linked List", []() { return system("./historical_linked_list_test"); }},
+        {"Historical Linked List", [linkedListTestCmd]() { return system(linkedListTestCmd.c_str()); }},
         {"Database", [dbTestCmd]() { return system(dbTestCmd.c_str()); }}
     };
     
