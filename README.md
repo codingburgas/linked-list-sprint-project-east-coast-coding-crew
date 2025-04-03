@@ -56,14 +56,11 @@
 
 | Name | Role | Grade |
 | :---:   | :---: | :---: |
-|  <h3><a href = "https://github.com/BRMilev22">Boris Milev</a></h3> | Back-End Developer | 10A |
+|  <h3><a href = "https://github.com/BRMilev22">Boris Milev</a></h3> | QA/Front-end | 10A |
 | <h3><a href = "https://github.com/PRPetkov22">Plamen Petkov</a></h3> | Designer/Scrum-Trainer | 10A |
-| <h3><a href = "https://github.com/AMKolev22">Aleksandar Kolev</a></h3> |  Front-End Developer  | 10G |
-| <h3><a href = "https://github.com/VOOleksandrov22">Oleksandr Vinichenko</a></h3> | QA | 10G |
+| <h3><a href = "https://github.com/AMKolev22">Aleksandar Kolev</a></h3> |  Back-end  | 10G |
+| <h3><a href = "https://github.com/VOOleksandrov22">Oleksandr Vinichenko</a></h3> | Front-end | 10G |
 <br>
 <hr>
 <h4 align="center"> Created by East coast coding crew team | &copy 2025 All rights reserved.</h4>
 <h1 align="center">Thanks for checking out our repo, show us some ❤️ by giving our repo a ⭐️!</h1>
-
-
-

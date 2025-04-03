@@ -205,9 +205,81 @@ namespace Eccc {
         }
 
         void HistoricalLinkedList::sortByDate() {
+            // Add debug output to understand the list content before sorting
+            // std::cout << "Debug: Sorting list by date, current order:\n";
+            // HistoricalNode* current = head;
+            // while (current != nullptr) {
+            //     std::cout << "  ID: " << current->data.id 
+            //               << ", Title: " << current->data.title 
+            //               << ", Date timestamp: " << current->data.date 
+            //               << ", Formatted: " << formatDateSafe(current->data.date) << "\n";
+            //     current = current->next;
+            // }
+
+            // Sort by chronological order (oldest to newest)
+            // We need to decode date values properly:
+            // For ancient dates in YYYYMMDD format, decode them to get year
+            // For Unix timestamps, convert them to year too
+            // Then sort by decoded year
             sortBy([](const HistoricalEvent& a, const HistoricalEvent& b) {
-                return a.date < b.date;
+                // For debugging the actual values being compared
+                // std::cout << "  Comparing dates: " << a.date << " vs " << b.date 
+                //           << " (Events: " << a.title << " vs " << b.title << ")\n";
+                
+                // Extract year from negative YYYYMMDD value or from Unix timestamp
+                int yearA, yearB;
+                
+                // For negative values (ancient dates in YYYYMMDD format)
+                if (a.date < 0) {
+                    yearA = std::abs(a.date) / 10000; // Extract year part (e.g., -19690720 -> 1969)
+                } else {
+                    // For standard Unix timestamps
+                    time_t timestamp = a.date;
+                    struct tm* timeinfo = localtime(&timestamp);
+                    yearA = timeinfo ? (timeinfo->tm_year + 1900) : 0;
+                }
+                
+                if (b.date < 0) {
+                    yearB = std::abs(b.date) / 10000; // Extract year part
+                } else {
+                    time_t timestamp = b.date;
+                    struct tm* timeinfo = localtime(&timestamp);
+                    yearB = timeinfo ? (timeinfo->tm_year + 1900) : 0;
+                }
+                
+                // Primary sort by year
+                if (yearA != yearB) {
+                    return yearA < yearB; // Older years first
+                }
+                
+                // If years are equal, sort by the full date
+                if (a.date < 0 && b.date < 0) {
+                    // For two ancient dates, compare the encoded values
+                    // Smaller encoded value = older date (e.g., -6810408 has a smaller year than -19690720)
+                    return std::abs(a.date) < std::abs(b.date);
+                } else if (a.date < 0 && b.date > 0) {
+                    // Ancient date comes before Unix timestamp if same year
+                    // (Shouldn't really happen as Unix timestamps start from 1970)
+                    return true;
+                } else if (a.date > 0 && b.date < 0) {
+                    // Unix timestamp comes after ancient date if same year
+                    return false;
+                } else {
+                    // Both are Unix timestamps - normal comparison
+                    return a.date < b.date;
+                }
             });
+            
+            // Add debug output to verify the sorted order
+            // std::cout << "Debug: After sorting by date, new order:\n";
+            // current = head;
+            // while (current != nullptr) {
+            //     std::cout << "  ID: " << current->data.id 
+            //               << ", Title: " << current->data.title 
+            //               << ", Date timestamp: " << current->data.date 
+            //               << ", Formatted: " << formatDateSafe(current->data.date) << "\n";
+            //     current = current->next;
+            // }
         }
 
         void HistoricalLinkedList::sortByTitle() {
