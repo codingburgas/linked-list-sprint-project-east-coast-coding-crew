@@ -2,6 +2,7 @@
 #include <soci/soci.h>
 #include <ctime>
 #include <fstream>
+#include <iostream>
 
 #ifdef __APPLE__
     #include <nlohmann/json.hpp>
@@ -243,9 +244,11 @@ namespace Eccc {
                 }
                 std::vector<HistoricalEvent> events;
 
+                // Debug information about retrieved events and their dates
+                // std::cout << "Debug: Retrieving all events from database\n";
+
                 soci::rowset<soci::row> rows = (sql->prepare <<
-                    "SELECT id, title, description, location, event_date, category, significance, leader, participants, result "
-                    "FROM historical_events ORDER BY event_date");
+                    "SELECT id, title, description, location, event_date, category, significance, leader, participants, result FROM historical_events");
 
                 for (const auto& row : rows) {
                     HistoricalEvent event;
@@ -253,7 +256,15 @@ namespace Eccc {
                     event.title = row.get<std::string>(1, "");
                     event.description = row.get<std::string>(2, "");
                     event.location = row.get<std::string>(3, "");
-                    event.date = static_cast<time_t>(row.get<long long>(4, 0));
+                    
+                    // Get the timestamp and convert it to time_t
+                    long long dateTimestamp = row.get<long long>(4, 0);
+                    event.date = static_cast<time_t>(dateTimestamp);
+                    
+                    // Debug information about each event's date
+                    // std::cout << "Debug: Event ID " << event.id << " (" << event.title << ") - Date timestamp: " 
+                    //           << dateTimestamp << ", Converted date: " << event.date << "\n";
+                    
                     event.category = row.get<std::string>(5, "");
                     event.significance = row.get<int>(6, 0);
                     event.leader = row.get<std::string>(7, "");
