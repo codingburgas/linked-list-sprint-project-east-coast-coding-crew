@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://media.discordapp.net/attachments/1158441474220888074/1302271235337486420/F6JdV6N.png?ex=67278219&is=67263099&hm=12d5da263945ca925aec74bc500c8b85a4b68ccf4e20b9ed10c822ed4ce3efa" alt="Project Logo">
+    <img src="assets/logo.png" alt="Project Logo" width="300" height="300">
 </p>
 
 <h1 align="center">East Coast Coding Crew</h1>
