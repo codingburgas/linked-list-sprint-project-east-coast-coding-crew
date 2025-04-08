@@ -1,0 +1,27 @@
+var class_eccc_1_1_core_1_1_historical_linked_list =
+[
+    [ "HistoricalLinkedList", "class_eccc_1_1_core_1_1_historical_linked_list.html#a353404f60630e6cf7d1379be83dba29f", null ],
+    [ "~HistoricalLinkedList", "class_eccc_1_1_core_1_1_historical_linked_list.html#ab7f456053963ef2ef237edb2cff93706", null ],
+    [ "HistoricalLinkedList", "class_eccc_1_1_core_1_1_historical_linked_list.html#af0cb31b91693535624e8e71215df7b31", null ],
+    [ "HistoricalLinkedList", "class_eccc_1_1_core_1_1_historical_linked_list.html#a9047242dcd570a987b6468936ee9783c", null ],
+    [ "clear", "class_eccc_1_1_core_1_1_historical_linked_list.html#a8ed83f8a24d3d08d0af46753e0ee7e29", null ],
+    [ "deleteNode", "class_eccc_1_1_core_1_1_historical_linked_list.html#a4daffb8fae039d4d5647bb4b5e6cbbaa", null ],
+    [ "display", "class_eccc_1_1_core_1_1_historical_linked_list.html#a566f8e451345092a4f76427965838bf2", null ],
+    [ "find", "class_eccc_1_1_core_1_1_historical_linked_list.html#abefe6d913501ab19a7b63efa0201222a", null ],
+    [ "findByCategory", "class_eccc_1_1_core_1_1_historical_linked_list.html#ae1e17ab727c72c2c81b3131d96ce1e71", null ],
+    [ "findByLocation", "class_eccc_1_1_core_1_1_historical_linked_list.html#a77ea3110737aeee3972c4f2b02e8d3f5", null ],
+    [ "findByTitle", "class_eccc_1_1_core_1_1_historical_linked_list.html#acc2dc3620f54c8aed4d6144725b62851", null ],
+    [ "getHead", "class_eccc_1_1_core_1_1_historical_linked_list.html#aa5e8e10c48f2832d996024464d630782", null ],
+    [ "getSize", "class_eccc_1_1_core_1_1_historical_linked_list.html#aca48742476ee98f24305d5dff53d27e1", null ],
+    [ "getTail", "class_eccc_1_1_core_1_1_historical_linked_list.html#aecbd9be094aea62ffb850170e8c5a120", null ],
+    [ "insertAfter", "class_eccc_1_1_core_1_1_historical_linked_list.html#ad40f9e7ecf42dfe23009082f25ed9b32", null ],
+    [ "insertAtBeginning", "class_eccc_1_1_core_1_1_historical_linked_list.html#a563597ab5b2bf712b1d59ec29fb83d84", null ],
+    [ "insertAtEnd", "class_eccc_1_1_core_1_1_historical_linked_list.html#aa02bc507e9fe035f560d4bf93c68a9c2", null ],
+    [ "insertByDate", "class_eccc_1_1_core_1_1_historical_linked_list.html#a2d4e2f83075d8433b864fcaf9960e2fa", null ],
+    [ "isEmpty", "class_eccc_1_1_core_1_1_historical_linked_list.html#a7594fc2b89ae8a76f98a98a3a67876c8", null ],
+    [ "operator=", "class_eccc_1_1_core_1_1_historical_linked_list.html#a5e216f17e3cd37e48eb8549aabcb5410", null ],
+    [ "operator=", "class_eccc_1_1_core_1_1_historical_linked_list.html#afd9e34cc1666a28e1dc9641b932a157d", null ],
+    [ "sortBy", "class_eccc_1_1_core_1_1_historical_linked_list.html#a58323c68d5050195db0be15620367e60", null ],
+    [ "sortByDate", "class_eccc_1_1_core_1_1_historical_linked_list.html#a894b2a6c153d6af6bb55dcd9d6cde78f", null ],
+    [ "sortByTitle", "class_eccc_1_1_core_1_1_historical_linked_list.html#a01780ddd4d81aa229aebe8d670222b8a", null ]
+];
