@@ -1,0 +1,6 @@
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/Core.dir
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/historical_linked_list_test.dir
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/database_test.dir
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/unitTests.dir
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/edit_cache.dir
+/Users/borismilev/desktop/linked-list-sprint-project-east-coast-coding-crew/build/CMakeFiles/rebuild_cache.dir
